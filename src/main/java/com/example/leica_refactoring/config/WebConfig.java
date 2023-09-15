@@ -14,15 +14,43 @@ import java.util.List;
 @NonNull
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-
+    private final Environment env;
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+
+        String[] activeProfiles = env.getActiveProfiles();
+
+        String[] allowedOrigins;
+
+        List<String> allowedOriginsProfiles = Arrays.asList("local", "dev", "staging");
+
+        if (allowedOriginsProfiles.contains(activeProfiles[0])) {
+            allowedOrigins = new String[]{"*", "*:*"};
+        } else {
+            allowedOrigins = new String[]{"*", "*:*"};
+        }
+
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://krleicablog.shop:8080")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Authorization", "Content-Type")
-                .exposedHeaders("userCode", "loginType","authorization","Cookie")
-                .allowCredentials(true)
-                .maxAge(3600);
+                .allowedOrigins(allowedOrigins)
+//                .allowCredentials(true)
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                .allowedHeaders("Content-Type", "Authorization", "cache-control");
+
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000")
+                .exposedHeaders("userCode", "loginType")
+                .allowedHeaders("*")
+                .allowedMethods("*")
+                .allowCredentials(true);
     }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("http://localhost:3000", "http://krleicablog.shop:8080")
+//                .allowedMethods("GET", "POST", "PUT", "DELETE")
+//                .allowedHeaders("Authorization", "Content-Type")
+//                .exposedHeaders("userCode", "loginType","authorization","Cookie")
+//                .allowCredentials(true)
+//                .maxAge(3600);
+//    }
 }
