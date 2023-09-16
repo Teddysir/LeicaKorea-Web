@@ -5,7 +5,9 @@ import com.example.leica_refactoring.dto.RequestParentCategoryDto;
 import com.example.leica_refactoring.dto.RequestUpdateChildCategoryDto;
 import com.example.leica_refactoring.dto.ResponseChildCategoryDto;
 import com.example.leica_refactoring.entity.Category;
+import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.member.MemberRepository;
+import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +24,22 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-
+    private final PostRepository postRepository;
 
     public List<ResponseChildCategoryDto> findAllChildCategory(String parentCategory) {
-        Category category = categoryRepository.findByName(parentCategory);
+            Category category = categoryRepository.findByName(parentCategory);
+
 
         List<ResponseChildCategoryDto> childCategoryDtos = category.getChild().stream()
-                .map(childCategory -> ResponseChildCategoryDto.builder()
-                        .id(childCategory.getId())
-                        .childName(childCategory.getName()) // 자식 카테고리의 필드를 적절히 매핑
-                        .build())
+                .map(childCategory -> {
+                    List<Post> numbersOfPost = postRepository.findByChildCategory(childCategory);
+                    // ResponseChildCategoryDto.builder()를 호출하고 필드를 적절히 매핑한 후 객체를 생성하고 반환합니다.
+                    return ResponseChildCategoryDto.builder()
+                            .id(childCategory.getId())
+                            .size(numbersOfPost.size())
+                            .childName(childCategory.getName())
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         return childCategoryDtos;

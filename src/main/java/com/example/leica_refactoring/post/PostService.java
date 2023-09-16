@@ -109,6 +109,7 @@ public class PostService {
     public ResponsePostListDto findAllPostByChildCategory(String parentName, String childName) {
         List<Category> childCategories = categoryRepository.findAllByName(childName);
 
+
         Category selectedChildCategory = null;
         for (Category category : childCategories) {
             if (category.getParent().getName().equals(parentName)) {
