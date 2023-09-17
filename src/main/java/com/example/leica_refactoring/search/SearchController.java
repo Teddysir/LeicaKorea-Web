@@ -1,6 +1,6 @@
 package com.example.leica_refactoring.search;
 
-import com.example.leica_refactoring.dto.ResponsePostListDto;
+import com.example.leica_refactoring.dto.ResponseSearchPostListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,9 +13,9 @@ public class SearchController {
     private final SearchService searchService;
     // 게시물 검색(완성)
     @GetMapping("/search/post")
-    public ResponsePostListDto searchPost(@RequestParam(value = "keyword")String keyword){
-        ResponsePostListDto responsePostListDto = searchService.SearchPost(keyword);
+    public ResponseSearchPostListDto searchPost(@RequestParam(value = "keyword")String keyword){
+        ResponseSearchPostListDto listDto = searchService.searchPost(keyword);
 
-        return responsePostListDto;
+        return listDto;
     }
 }

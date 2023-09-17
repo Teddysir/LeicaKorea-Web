@@ -10,8 +10,9 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor @AllArgsConstructor
-public class ResponsePostListDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResponseSearchPostListDto {
     private Long size;
-    private  List<ResponsePostDto> childList = new ArrayList<>();
+    private List<ResponseSearchPostDto> childList = new ArrayList<>();
 }
