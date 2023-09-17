@@ -1,11 +1,9 @@
 package com.example.leica_refactoring.post;
 
-import com.example.leica_refactoring.dto.RequestPostDto;
-import com.example.leica_refactoring.dto.ResponsePostDto;
-import com.example.leica_refactoring.dto.ResponsePostListDto;
-import com.example.leica_refactoring.dto.ResponsePostOneDto;
+import com.example.leica_refactoring.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -45,11 +43,12 @@ public class PostController {
 
     // 게시물 생성(ADMIN만 가능)
     @PostMapping("/post")
-    public Long createPost(@RequestBody RequestPostDto requestPostDto, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<String> createPost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto,
+                                             @AuthenticationPrincipal UserDetails userDetails){
 
-        Long save = postService.save(requestPostDto, userDetails.getUsername());
+        Long save = postService.save(requestPostWithSearchableDto, userDetails.getUsername());
 
-        return save;
+        return ResponseEntity.ok().body("{\"postId\": " + save + "}");
     }
 
     @GetMapping("/find/{id}")

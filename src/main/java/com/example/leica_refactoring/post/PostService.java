@@ -5,7 +5,9 @@ import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
+import com.example.leica_refactoring.entity.SearchPost;
 import com.example.leica_refactoring.member.MemberRepository;
+import com.example.leica_refactoring.search.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,34 +24,46 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
+    private final SearchRepository searchRepository;
 
 
     // 게시물 생성
-    public Long save(RequestPostDto requestPostDto, String memberId) {
+    public Long save(RequestPostWithSearchableDto requestPostDto, String memberId) {
         Member member = memberRepository.findByMemberId(memberId);
         if(member == null){
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
         }else{
-            Category category = categoryRepository.findByName(requestPostDto.getParentName());
+            String content = requestPostDto.getContent();
+            RequestPostDto postDto = requestPostDto.getPost();
+
+            Category category = categoryRepository.findByName(postDto.getParentName());
 
             Category childCategory = null;
 
             for (Category category1 : category.getChild()) {
-                if (category1.getName().equals(requestPostDto.getChildName())) {
+                if (category1.getName().equals(postDto.getChildName())) {
                     childCategory = category1;
                     break;
                 }
             }
 
             Post post = Post.builder()
-                    .title(requestPostDto.getTitle())
-                    .content(requestPostDto.getContent())
-                    .subTitle(requestPostDto.getSubTitle())
-                    .thumbnail(requestPostDto.getThumbnail())
+                    .title(postDto.getTitle())
+                    .content(postDto.getContent())
+                    .subTitle(postDto.getSubTitle())
+                    .thumbnail(postDto.getThumbnail())
                     .childCategory(childCategory)
                     .member(member)
                     .build();
             Post save = postRepository.save(post);
+
+
+            SearchPost searchPost = SearchPost.builder()
+                    .post(save)
+                    .content(content)
+                    .build();
+            SearchPost save2 = searchRepository.save(searchPost);
+
             return save.getId();
         }
     }
