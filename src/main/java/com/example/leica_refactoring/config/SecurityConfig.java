@@ -2,6 +2,7 @@ package com.example.leica_refactoring.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,8 +21,9 @@ public class SecurityConfig {
                .anyRequest().authenticated()
                .and()
                .csrf().disable()
-               .httpBasic().and()
-               .formLogin().permitAll();
-       return http.build();
+               .httpBasic().and().cors()
+               .and()
+               .formLogin();
+        return http.build();
     }
 }
