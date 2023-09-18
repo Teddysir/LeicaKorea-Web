@@ -21,8 +21,7 @@ public class SecurityConfig {
                .and()
                .csrf().disable()
                .httpBasic().and()
-               .formLogin().permitAll()
-               .defaultSuccessUrl("/");
+               .formLogin().permitAll();
        return http.build();
     }
 }
