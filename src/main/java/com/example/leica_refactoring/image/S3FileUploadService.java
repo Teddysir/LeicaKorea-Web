@@ -26,9 +26,13 @@ public class S3FileUploadService {
     @Value("${cloud.aws.s3.default-url}")
     private String defaultUrl;
 
-    public String uploadFile(MultipartFile file) throws IOException{
+    public String uploadFile(MultipartFile file,String memberId) throws IOException {
 
+        Member member = memberRepository.findByMemberId(memberId);
 
+        if (member == null) {
+            throw new UsernameNotFoundException("유저가 존재하지 않습니다.");
+        } else {
             String fileName = generateFileName(file);
             String imageUrl = defaultUrl + fileName;
             try {
@@ -36,6 +40,7 @@ public class S3FileUploadService {
                 return imageUrl;
             } catch (SdkClientException e) {
                 throw new IOException("S3에 파일 업로드를 실패하였습니다.", e);
+            }
         }
     }
 
