@@ -21,7 +21,8 @@ public class SecurityConfig {
                .anyRequest().authenticated()
                .and()
                .csrf().disable()
-               .httpBasic().and().cors()
+               .httpBasic().and()
+               .cors()
                .and()
                .formLogin();
         return http.build();
