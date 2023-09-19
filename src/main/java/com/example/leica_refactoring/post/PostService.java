@@ -226,6 +226,7 @@ public class PostService {
                     .content(post.getContent())
                     .subTitle(post.getSubTitle())
                     .thumbnail(post.getThumbnail())
+                    .parentCategory(post.getChildCategory() != null ? post.getChildCategory().getParent().getName() : null)
                     .writer(post.getMember() != null ? post.getMember().getMemberId() : null)
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
                     .build();
