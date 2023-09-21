@@ -17,4 +17,10 @@ public class Mail {
 
     @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
+    private String subject;
+
+    @Column(nullable = false)
+    private String mailTo;
 }
