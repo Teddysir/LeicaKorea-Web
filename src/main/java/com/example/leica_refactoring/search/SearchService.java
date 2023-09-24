@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,6 @@ public class SearchService {
     @Transactional
     public ResponseSearchPostListDto searchPost(String keyword) {
         List<SearchPost> postList = searchRepository.findByContentContainingOrPostTitleContaining(keyword, keyword);
-
 
         List<ResponseSearchPostDto> collect = postList.stream().map(searchPost -> {
             String content = searchPost.getContent();
