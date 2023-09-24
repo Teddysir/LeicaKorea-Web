@@ -27,12 +27,12 @@ public class SecurityConfig {
                .cors()
                .and()
                .formLogin()
-               .successHandler(new RedirectHandler());
-//               .and()
-//               .sessionManagement()
-//               .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-//               .sessionFixation()
-//               .none();
+               .successHandler(new RedirectHandler())
+               .and()
+               .sessionManagement()
+               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .sessionFixation()
+               .none();
         return http.build();
     }
 
