@@ -27,10 +27,10 @@ public class SearchService {
 
     @Transactional
     public ResponseSearchPostListDto searchPost(String keyword) {
-        List<SearchPost> postList = searchRepository.findByContentContainingOrPostTitleContaining(keyword, keyword);
+        List<SearchPost> postList = searchRepository.findBySearchContentContainingOrPostTitleContaining(keyword, keyword);
 
         List<ResponseSearchPostDto> collect = postList.stream().map(searchPost -> {
-            String content = searchPost.getContent();
+            String content = searchPost.getSearchContent();
             Post post = searchPost.getPost();
             Pattern compile = Pattern.compile("/([^/]*" + keyword + "[^/]*)/");
             Matcher matcher = compile.matcher(content);

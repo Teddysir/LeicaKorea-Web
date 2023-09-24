@@ -21,6 +21,7 @@ public class SearchPost {
     private Post post;
 
     @Lob
-    private String content;
+    @Column(nullable = false)
+    private String searchContent;
 
 }

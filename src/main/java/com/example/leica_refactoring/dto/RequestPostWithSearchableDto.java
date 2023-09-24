@@ -8,7 +8,7 @@ import javax.persistence.Lob;
 public class RequestPostWithSearchableDto {
 
     @Lob
-    private String content;
+    private String searchContent;
 
     private RequestPostDto post;
 }

@@ -33,7 +33,7 @@ public class PostService {
         if(member == null){
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
         }else{
-            String content = requestPostDto.getContent();
+            String content = requestPostDto.getSearchContent();
             RequestPostDto postDto = requestPostDto.getPost();
 
             Category category = categoryRepository.findByName(postDto.getParentName());
@@ -60,7 +60,7 @@ public class PostService {
 
             SearchPost searchPost = SearchPost.builder()
                     .post(save)
-                    .content(content)
+                    .searchContent(content)
                     .build();
             SearchPost save2 = searchRepository.save(searchPost);
 
