@@ -3,6 +3,7 @@ package com.example.leica_refactoring.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,6 +27,7 @@ public class SecurityConfig {
                .cors()
                .and()
                .formLogin()
+               .successHandler(new RedirectHandler())
                .and()
                .sessionManagement()
                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
@@ -33,4 +35,5 @@ public class SecurityConfig {
                .none();
         return http.build();
     }
+
 }
