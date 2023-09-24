@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -24,7 +25,12 @@ public class SecurityConfig {
                .httpBasic().and()
                .cors()
                .and()
-               .formLogin();
+               .formLogin()
+               .and()
+               .sessionManagement()
+               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .sessionFixation()
+               .none();
         return http.build();
     }
 }
