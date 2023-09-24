@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Getter @Setter
 @Builder
 @NoArgsConstructor @AllArgsConstructor
-public class Post extends PostTime  {
+public class Post extends PostTime {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
