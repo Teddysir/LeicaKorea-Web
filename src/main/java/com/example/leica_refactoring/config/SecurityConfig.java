@@ -30,7 +30,7 @@ public class SecurityConfig {
                .successHandler(new RedirectHandler())
                .and()
                .sessionManagement()
-               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                .sessionFixation()
                .none();
         return http.build();
