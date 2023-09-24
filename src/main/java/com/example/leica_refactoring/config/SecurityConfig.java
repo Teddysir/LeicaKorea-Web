@@ -28,7 +28,7 @@ public class SecurityConfig {
                .formLogin()
                .and()
                .sessionManagement()
-               .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+               .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                .sessionFixation()
                .none();
         return http.build();
