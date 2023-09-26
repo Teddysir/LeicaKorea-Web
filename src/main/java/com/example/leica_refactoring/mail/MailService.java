@@ -12,14 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MailService {
     private final JavaMailSender javaMailSender;
-
+    private final MailSenderFactoryImpl mailSenderFactory;
     @Transactional
-    public String sendMailReject(RequestMailDto dto) throws Exception{
+    public String sendMailReject(RequestMailDto dto,String email,String password) throws Exception{
 
         try {
+
+            JavaMailSender javaMailSender = mailSenderFactory.getSender(email,password);
+
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
             simpleMailMessage.setTo(dto.getMailTo());
+            simpleMailMessage.setFrom(email);
             simpleMailMessage.setSubject("[Leica] 견적 요청 메일입니다.");
             simpleMailMessage.setText(dto.getContent());
 
