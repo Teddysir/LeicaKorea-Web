@@ -16,8 +16,8 @@ import java.sql.Timestamp;
 public abstract class PostTime {
 
     @CreatedDate
-    @Column(nullable = false)
-    private Timestamp create_at;
+    @Column(name = "create_at", nullable = false)
+    private Timestamp createdAt;
 
     @LastModifiedDate
     private Timestamp modified_at;
