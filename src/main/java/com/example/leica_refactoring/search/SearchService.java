@@ -8,6 +8,7 @@ import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.entity.SearchPost;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class SearchService {
             }
 
             if (matchedContent.toString().trim().equals("")){
-                content  = post.getContent().substring(0, Math.min(post.getContent().length(), 30));
+                content  = content.replace("/", "").substring(0, Math.min(content.length(), 30));
             }else{
                  content = matchedContent.toString().trim();
                  content = content.replace("/", "");
