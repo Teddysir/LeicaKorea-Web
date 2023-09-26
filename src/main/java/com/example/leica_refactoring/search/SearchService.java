@@ -33,7 +33,7 @@ public class SearchService {
         List<ResponseSearchPostDto> collect = postList.stream().map(searchPost -> {
             String content = searchPost.getSearchContent();
             Post post = searchPost.getPost();
-            Pattern compile = Pattern.compile("/([^/]*" + keyword + "[^/]*)/");
+            Pattern compile = Pattern.compile("[^/]*"+keyword+"[^/]*");
             Matcher matcher = compile.matcher(content);
             StringBuilder matchedContent = new StringBuilder();
 
@@ -42,7 +42,8 @@ public class SearchService {
             }
 
             if (matchedContent.toString().trim().equals("")){
-                content  = content.replace("/", "").substring(0, Math.min(content.length(), 30));
+                content  = content.replace("/", "");
+                content = content.substring(0, Math.min(content.length(), 30));
             }else{
                  content = matchedContent.toString().trim();
                  content = content.replace("/", "");

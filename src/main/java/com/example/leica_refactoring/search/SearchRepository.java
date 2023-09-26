@@ -14,4 +14,5 @@ public interface SearchRepository extends JpaRepository<SearchPost, Long> {
 
     List<SearchPost> findBySearchContentContainingOrPostTitleContaining(String keyword, String keyword2);
 
+    SearchPost findByPost_Id(Long id);
 }
