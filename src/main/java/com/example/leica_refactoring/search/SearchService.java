@@ -44,11 +44,13 @@ public class SearchService {
                 content  = post.getContent().substring(0, Math.min(post.getContent().length(), 30));
             }else{
                  content = matchedContent.toString().trim();
+                 content = content.replace("/", "");
             }
 
             return ResponseSearchPostDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
+                    .subTitle(post.getSubTitle())
                     .content(content)
                     .thumbnail(post.getThumbnail())
                     .parentName(post.getChildCategory().getParent().getName())
