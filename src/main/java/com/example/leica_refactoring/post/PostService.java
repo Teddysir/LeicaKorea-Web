@@ -82,13 +82,14 @@ public class PostService {
 
             List<ResponsePostDto> collect = all.stream()
                     .filter(Objects::nonNull)
-                    .map(PostService::getBuild)
+                    .map(this::getBuild)
                     .collect(Collectors.toList());
 
             return ResponsePostListDto.builder()
                     .size((long) size)
                     .childList(collect)
-                    .build();}
+                    .build();
+        }
 
     }
 
@@ -107,7 +108,7 @@ public class PostService {
 
             List<ResponsePostDto> postDtos = category.getChild().stream()
                     .flatMap(child -> child.getPosts().stream()
-                            .map(PostService::getBuild
+                            .map(this::getBuild
                             )
                     )
                     .collect(Collectors.toList());
@@ -141,7 +142,7 @@ public class PostService {
             Long totalPostCount = (long) selectedChildCategory.getPosts().size();
 
             List<ResponsePostDto> postDtos = selectedChildCategory.getPosts().stream()
-                    .map(PostService::getBuild
+                    .map(this::getBuild
                     )
                     .collect(Collectors.toList());
 
@@ -204,11 +205,17 @@ public class PostService {
     }
 
 
-    private static ResponsePostDto getBuild(Post post) {
+    private ResponsePostDto getBuild(Post post) {
         if (post != null) {
+            SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
+            String content = byPostId.getSearchContent();
+            content = content.replace("/", "");
+            content = content.substring(0, Math.min(content.length(), 30));
+
             return ResponsePostDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
+                    .content(content)
                     .subTitle(post.getSubTitle())
                     .thumbnail(post.getThumbnail())
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
