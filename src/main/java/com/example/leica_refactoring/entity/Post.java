@@ -35,5 +35,8 @@ public class Post extends PostTime  {
     @ManyToOne
     private Category childCategory;
 
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true) // post 필드를 통해 양방향 관계를 맺게해줌
+    private SearchPost searchPost; // CASCADE 설정도 해주었다.
+
 
 }

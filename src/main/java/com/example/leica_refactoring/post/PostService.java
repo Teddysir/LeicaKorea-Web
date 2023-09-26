@@ -205,9 +205,9 @@ public class PostService {
     }
 
 
-    private ResponsePostDto getBuild(Post post) {
+    private ResponsePostDto getBuild(Post post){
         if (post != null) {
-            SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
+                SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
             String content = byPostId.getSearchContent();
             content = content.replace("/", "");
             content = content.substring(0, Math.min(content.length(), 30));
@@ -217,6 +217,8 @@ public class PostService {
                     .title(post.getTitle())
                     .content(content)
                     .subTitle(post.getSubTitle())
+                    .createdAt(post.getCreatedAt())
+                    .modified_at(post.getModified_at())
                     .thumbnail(post.getThumbnail())
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
                     .build();
@@ -233,6 +235,8 @@ public class PostService {
                     .content(post.getContent())
                     .subTitle(post.getSubTitle())
                     .thumbnail(post.getThumbnail())
+                    .createdAt(post.getCreatedAt())
+                    .modified_at(post.getModified_at())
                     .parentCategory(post.getChildCategory() != null ? post.getChildCategory().getParent().getName() : null)
                     .writer(post.getMember() != null ? post.getMember().getMemberId() : null)
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)

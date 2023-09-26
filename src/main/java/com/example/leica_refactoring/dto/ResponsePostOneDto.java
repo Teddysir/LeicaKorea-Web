@@ -4,6 +4,8 @@ package com.example.leica_refactoring.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class ResponsePostOneDto {
@@ -16,5 +18,7 @@ public class ResponsePostOneDto {
     private String writer;
     private String category;
     private String parentCategory;
+    private LocalDateTime createdAt;
+    private LocalDateTime modified_at;
 
 }
