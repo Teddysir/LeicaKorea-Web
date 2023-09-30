@@ -12,13 +12,11 @@ public class RequestMailDto {
     private String content;
     private String mailTo;
     private String subject;
-    private String mailFrom;
 
-    private RequestMailDto(String content,String mailTo, String subject,String mailFrom){
+    private RequestMailDto(String content,String mailTo, String subject){
         this.content = content;
         this.mailTo = mailTo;
         this.subject = subject;
-        this.mailFrom = mailFrom;
     }
 
 }
