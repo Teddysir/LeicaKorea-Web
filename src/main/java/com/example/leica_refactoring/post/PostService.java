@@ -220,8 +220,6 @@ public class PostService {
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
                     .thumbnail(post.getThumbnail())
-                    .create_at(post.getCreate_at())
-                    .modified_at(post.getModified_at())
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
                     .build();
         } else {

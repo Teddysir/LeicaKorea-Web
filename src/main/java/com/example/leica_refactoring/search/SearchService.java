@@ -1,7 +1,5 @@
 package com.example.leica_refactoring.search;
 
-import com.example.leica_refactoring.dto.ResponsePostDto;
-import com.example.leica_refactoring.dto.ResponsePostListDto;
 import com.example.leica_refactoring.dto.ResponseSearchPostDto;
 import com.example.leica_refactoring.dto.ResponseSearchPostListDto;
 import com.example.leica_refactoring.entity.Post;
@@ -12,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +52,8 @@ public class SearchService {
                     .subTitle(post.getSubTitle())
                     .content(content)
                     .thumbnail(post.getThumbnail())
+                    .createdAt(post.getCreatedAt())
+                    .modified_at(post.getModified_at())
                     .parentName(post.getChildCategory().getParent().getName())
                     .childName(post.getChildCategory().getName())
                     .build();
