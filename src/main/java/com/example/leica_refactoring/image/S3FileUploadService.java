@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -34,6 +35,10 @@ public class S3FileUploadService {
             throw new UsernameNotFoundException("유저가 존재하지 않습니다.");
         } else {
             String fileName = generateFileName(file);
+            UUID uuid = UUID.randomUUID();
+
+            fileName = uuid.toString() + "_" + fileName;
+
             String imageUrl = defaultUrl + fileName;
             try {
                 s3Client.putObject(bucketName, fileName, file.getInputStream(), getObjectMetadata(file));

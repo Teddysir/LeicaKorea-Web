@@ -12,7 +12,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/upload")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://localhost:3000")
 public class FileUploadController {
 
     private final S3FileUploadService s3FileUploadService;

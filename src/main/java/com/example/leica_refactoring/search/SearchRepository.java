@@ -12,6 +12,7 @@ import java.util.List;
 @Transactional
 public interface SearchRepository extends JpaRepository<SearchPost, Long> {
 
-    List<SearchPost> findByContentContainingOrPostTitleContaining(String keyword, String keyword2);
+    List<SearchPost> findBySearchContentContainingOrPostTitleContaining(String keyword, String keyword2);
 
+    SearchPost findByPost_Id(Long id);
 }

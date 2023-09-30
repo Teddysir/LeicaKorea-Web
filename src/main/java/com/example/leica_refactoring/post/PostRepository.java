@@ -9,6 +9,7 @@ import java.util.List;
 
 @Transactional
 public interface PostRepository extends JpaRepository<Post, Long> {
+    List<Post> findAllByOrderByCreatedAtDesc();
     List<Post> findByMemberMemberId(String username);
     List<Post> findByChildCategory(Category category);
 

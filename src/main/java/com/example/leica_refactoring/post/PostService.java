@@ -33,7 +33,7 @@ public class PostService {
         if(member == null){
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
         }else{
-            String content = requestPostDto.getContent();
+            String content = requestPostDto.getSearchContent();
             RequestPostDto postDto = requestPostDto.getPost();
 
             Category category = categoryRepository.findByName(postDto.getParentName());
@@ -60,7 +60,7 @@ public class PostService {
 
             SearchPost searchPost = SearchPost.builder()
                     .post(save)
-                    .content(content)
+                    .searchContent(content)
                     .build();
             SearchPost save2 = searchRepository.save(searchPost);
 
@@ -71,24 +71,25 @@ public class PostService {
 
     // 전체 게시물 반환
     public ResponsePostListDto findAll() {
-        List<Post> all = postRepository.findAll();
+        List<Post> all = postRepository.findAllByOrderByCreatedAtDesc();
         if (all.isEmpty()) {
             return ResponsePostListDto.builder()
                     .size(0L)
-                    .childList(Collections.emptyList())
+                    .   childList(Collections.emptyList())
                     .build();
         }else{
             int size = all.size();
 
             List<ResponsePostDto> collect = all.stream()
                     .filter(Objects::nonNull)
-                    .map(PostService::getBuild)
+                    .map(this::getBuild)
                     .collect(Collectors.toList());
 
             return ResponsePostListDto.builder()
                     .size((long) size)
                     .childList(collect)
-                    .build();}
+                    .build();
+        }
 
     }
 
@@ -107,7 +108,7 @@ public class PostService {
 
             List<ResponsePostDto> postDtos = category.getChild().stream()
                     .flatMap(child -> child.getPosts().stream()
-                            .map(PostService::getBuild
+                            .map(this::getBuild
                             )
                     )
                     .collect(Collectors.toList());
@@ -141,7 +142,7 @@ public class PostService {
             Long totalPostCount = (long) selectedChildCategory.getPosts().size();
 
             List<ResponsePostDto> postDtos = selectedChildCategory.getPosts().stream()
-                    .map(PostService::getBuild
+                    .map(this::getBuild
                     )
                     .collect(Collectors.toList());
 
@@ -204,12 +205,20 @@ public class PostService {
     }
 
 
-    private static ResponsePostDto getBuild(Post post) {
+    private ResponsePostDto getBuild(Post post){
         if (post != null) {
+                SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
+            String content = byPostId.getSearchContent();
+            content = content.replace("/", "");
+            content = content.substring(0, Math.min(content.length(), 30));
+
             return ResponsePostDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
+                    .content(content)
                     .subTitle(post.getSubTitle())
+                    .createdAt(post.getCreatedAt())
+                    .modified_at(post.getModified_at())
                     .thumbnail(post.getThumbnail())
                     .create_at(post.getCreate_at())
                     .modified_at(post.getModified_at())
@@ -228,6 +237,9 @@ public class PostService {
                     .content(post.getContent())
                     .subTitle(post.getSubTitle())
                     .thumbnail(post.getThumbnail())
+                    .createdAt(post.getCreatedAt())
+                    .modified_at(post.getModified_at())
+                    .parentCategory(post.getChildCategory() != null ? post.getChildCategory().getParent().getName() : null)
                     .writer(post.getMember() != null ? post.getMember().getMemberId() : null)
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
                     .build();
