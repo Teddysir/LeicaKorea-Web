@@ -75,7 +75,7 @@ public class PostService {
         if (all.isEmpty()) {
             return ResponsePostListDto.builder()
                     .size(0L)
-                    .childList(Collections.emptyList())
+                    .   childList(Collections.emptyList())
                     .build();
         }else{
             int size = all.size();
