@@ -4,7 +4,6 @@ import com.example.leica_refactoring.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,22 +21,22 @@ public class PostController {
 
     // 전체 게시물 조회
     @GetMapping("/")
-    public ResponsePostListDto post(Pageable pageable){
-        ResponsePostListDto all = postService.findAll(pageable);
+    public PaginationDto post(Pageable pageable){
+        PaginationDto all = postService.findAll(pageable);
         return all;
     }
 
     // 카테고리별 게시물 조회(부모 카테고리 기준)
     @GetMapping("/find/post/{parentCategory}")
-    public ResponsePostListDto findAllPostByParentCategory(@PathVariable String parentCategory, Pageable pageable){
-        ResponsePostListDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory, pageable);
+    public PaginationDto findAllPostByParentCategory(@PathVariable String parentCategory, Pageable pageable){
+        PaginationDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory, pageable);
         return allPostByParentCategory;
     }
 
     // 카테고리별 게시물 조회(자식 카테고리 기준)
     @GetMapping("/find/post/{parentCategory}/{childCategory}")
-    public ResponsePostListDto findAllPostByChildCategory(@PathVariable String parentCategory, @PathVariable String childCategory, Pageable pageable){
-        ResponsePostListDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory, pageable);
+    public PaginationDto findAllPostByChildCategory(@PathVariable String parentCategory, @PathVariable String childCategory, Pageable pageable){
+        PaginationDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory, pageable);
         return allPostByChildCategory;
     }
 

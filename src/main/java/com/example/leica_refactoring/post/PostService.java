@@ -72,39 +72,36 @@ public class PostService {
 
 
     // 전체 게시물 반환
-    public ResponsePostListDto findAll(Pageable pageable) {
+    public PaginationDto findAll(Pageable pageable) {
 
         Page<Post> all = postRepository.findAllByOrderByCreatedAtDesc(pageable);
 
         if (all.isEmpty()) {
-            return ResponsePostListDto.builder()
-                    .size(0L)
-                    .childList(Collections.emptyList())
-                    .build();
+            return getPaginationDto(0L, true, 0L, Collections.emptyList());
         }else{
+
 
             List<ResponsePostDto> collect = all.stream()
                     .filter(Objects::nonNull)
                     .map(this::getBuild)
                     .collect(Collectors.toList());
 
-            return ResponsePostListDto.builder()
-                    .size(all.getTotalElements())
-                    .childList(collect)
-                    .build();
+            boolean isLastPage = !all.hasNext();
+            int totalPages = all.getTotalPages();
+
+            return getPaginationDto((long)totalPages, isLastPage, all.getTotalElements(), collect);
+
         }
 
     }
 
 
     // 부모 카테고리안에 존재하는 모든 게시물 반환
-    public ResponsePostListDto findAllPostByParentCategory(String parentName, Pageable pageable) {
+    public PaginationDto findAllPostByParentCategory(String parentName, Pageable pageable) {
         Category category = categoryRepository.findByName(parentName);
         if (category == null) {
-            return ResponsePostListDto.builder()
-                    .size(0L) // 게시물 수를 0으로 설정
-                    .childList(Collections.emptyList()) // 빈 리스트 설정
-                    .build();
+            return getPaginationDto(0L, true, 0L, Collections.emptyList());
+
         } else {
             List<Post> allPosts = category.getChild().stream()
                     .flatMap(child -> child.getPosts().stream())
@@ -126,20 +123,18 @@ public class PostService {
                         .map(this::getBuild)
                         .collect(Collectors.toList());
 
-                return ResponsePostListDto.builder()
-                        .size((long) allPosts.size())
-                        .childList(postDtos)
-                        .build();
+                long totalPages = (long) Math.ceil((double) allPosts.size() / (double) pageSize);
+                boolean isLastPage = !pageable.isPaged() || currentPage >= totalPages - 1;
+
+                return getPaginationDto(totalPages, isLastPage, (long)allPosts.size(), postDtos);
             } else {
-                return ResponsePostListDto.builder()
-                        .size(0L)
-                        .childList(Collections.emptyList())
-                        .build();
+                return getPaginationDto(0L, true, 0L, Collections.emptyList());
+
             }
         }
     }
     // 자식 카테고리 안에있는 모든 게시물 반환
-    public ResponsePostListDto findAllPostByChildCategory(String parentName, String childName, Pageable pageable) {
+    public PaginationDto findAllPostByChildCategory(String parentName, String childName, Pageable pageable) {
         List<Category> childCategories = categoryRepository.findAllByName(childName);
 
 
@@ -152,10 +147,8 @@ public class PostService {
         }
 
         if (selectedChildCategory == null) {
-            return ResponsePostListDto.builder()
-                    .size(0L)
-                    .childList(Collections.emptyList())
-                    .build();
+            return getPaginationDto(0L, true, 0L, Collections.emptyList());
+
         } else {
             List<Post> allPosts = selectedChildCategory.getPosts()
                     .stream()
@@ -177,7 +170,12 @@ public class PostService {
                 postDtos = Collections.emptyList();
             }
 
-            return ResponsePostListDto.builder()
+            long totalPages = (long) Math.ceil((double) allPosts.size() / (double) pageSize);
+            boolean isLastPage = !pageable.isPaged() || currentPage >= totalPages - 1;
+
+            return PaginationDto.builder()
+                    .lastPage(isLastPage)
+                    .totalPage(totalPages)
                     .size((long) allPosts.size())
                     .childList(postDtos)
                     .build();
@@ -285,6 +283,15 @@ public class PostService {
             return null;
         }
     }
+    private static PaginationDto getPaginationDto(Long pageSize, boolean isLast, Long size, List childList) {
+        return PaginationDto.builder()
+                .totalPage(pageSize)
+                .lastPage(isLast)
+                .size(size)
+                .childList(childList)
+                .build();
+    }
+
 
 
 }
