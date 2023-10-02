@@ -24,10 +24,10 @@ public class MailService {
 
             javaMailSender.send(simpleMailMessage);
 
-            return "성공적으로 메일이 전송되었습니다.";
+            return "Success!";
         }catch (Exception e){
             e.printStackTrace();
-            return "메일 전송중 오류가 발생하였습니다.";
+            return "Fail!";
         }
     }
 }
