@@ -10,9 +10,10 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ResponseSearchPostListDto {
+@NoArgsConstructor @AllArgsConstructor
+public class PaginationSearchDto {
+    private Long totalPage;
+    private Boolean lastPage;
     private Long size;
     private List<ResponseSearchPostDto> childList = new ArrayList<>();
 }

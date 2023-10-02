@@ -1,12 +1,14 @@
 package com.example.leica_refactoring.search;
 
+import com.example.leica_refactoring.dto.PaginationSearchDto;
 import com.example.leica_refactoring.dto.ResponseSearchPostDto;
-import com.example.leica_refactoring.dto.ResponseSearchPostListDto;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.entity.SearchPost;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +26,11 @@ public class SearchService {
     private final PostRepository postRepository;
 
     @Transactional
-    public ResponseSearchPostListDto searchPost(String keyword) {
-        List<SearchPost> postList = searchRepository.findBySearchContentContainingOrPostTitleContaining(keyword, keyword);
+    public PaginationSearchDto searchPost(String keyword, Pageable pageable) {
 
-        List<ResponseSearchPostDto> collect = postList.stream().map(searchPost -> {
+        Page<SearchPost> searchPostPage = searchRepository.findBySearchContentContainingOrPostTitleContaining(keyword, keyword, pageable);
+
+        List<ResponseSearchPostDto> collect = searchPostPage.stream().map(searchPost -> {
             String content = searchPost.getSearchContent();
             Post post = searchPost.getPost();
             Pattern compile = Pattern.compile("[^/]*"+keyword+"[^/]*");
@@ -59,12 +62,17 @@ public class SearchService {
                     .build();
         }).collect(Collectors.toList());
 
-        long size = collect.size();
+        long size = searchPostPage.getTotalElements();
+        boolean isLastPage = !searchPostPage.hasNext();
+        long totalPages = searchPostPage.getTotalPages();
 
-        ResponseSearchPostListDto build = ResponseSearchPostListDto.builder()
+        PaginationSearchDto build = PaginationSearchDto.builder()
+                .lastPage(isLastPage)
+                .totalPage(totalPages)
                 .size(size)
                 .childList(collect)
                 .build();
+
         return build;
     }
 
