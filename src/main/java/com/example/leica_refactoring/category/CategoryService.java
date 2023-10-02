@@ -2,10 +2,12 @@ package com.example.leica_refactoring.category;
 
 import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
+import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.member.MemberRepository;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,63 +85,82 @@ public class CategoryService {
         return childCategoryDtos;
 
     }
-    public Long createParentCategory(RequestParentCategoryDto parentCategory) {
-        String parentName = parentCategory.getParentName();
-        Category category = categoryRepository.findByName(parentName);
-        if(category != null){
-            throw new CategoryAlreadyExistsException(parentName);
-        }else {
-            Category category1 = Category.builder()
-                    .name(parentName)
-                    .parent(null)
-                    .build();
+    public Long createParentCategory(RequestParentCategoryDto parentCategory, String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
 
-            Category save = categoryRepository.save(category1);
-            return save.getId();
-        }
-
-    }
-
-    public Long createChildCategory(RequestChildCategoryDto childCategory) {
-        Category parentCategory = categoryRepository.findByName(childCategory.getParentName());
-        if(parentCategory == null){
-            throw new ParentCategoryNotFoundException(childCategory.getParentName());
+        if(member == null) {
+            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
         }else{
-            String childName = childCategory.getChildName();
-            Category category = Category.builder()
-                    .name(childName)
-                    .parent(parentCategory)
-                    .build();
+            String parentName = parentCategory.getParentName();
+            Category category = categoryRepository.findByName(parentName);
+            if(category != null){
+                throw new CategoryAlreadyExistsException(parentName);
+            }else {
+                Category category1 = Category.builder()
+                        .name(parentName)
+                        .parent(null)
+                        .build();
 
-            Category save = categoryRepository.save(category);
-            return save.getId();
+                Category save = categoryRepository.save(category1);
+                return save.getId();
+            }
         }
-
-
     }
 
-    public void deleteCategory(Long categoryId) {
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        category.ifPresentOrElse(c -> categoryRepository.deleteById(categoryId),
-                ()-> {
-                    throw new NoSuchElementException("존재하지 않는 카테고리 입니다.");
+    public Long createChildCategory(RequestChildCategoryDto childCategory, String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+        if(member == null) {
+            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+        }else{
+            Category parentCategory = categoryRepository.findByName(childCategory.getParentName());
+            if(parentCategory == null){
+                throw new ParentCategoryNotFoundException(childCategory.getParentName());
+            }else{
+                String childName = childCategory.getChildName();
+                Category category = Category.builder()
+                        .name(childName)
+                        .parent(parentCategory)
+                        .build();
+
+                Category save = categoryRepository.save(category);
+                return save.getId();
+            }
+        }
+    }
+
+    public void deleteCategory(Long categoryId, String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+
+        if(member == null) {
+            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+        }else{
+            Optional<Category> category = categoryRepository.findById(categoryId);
+            category.ifPresentOrElse(c -> categoryRepository.deleteById(categoryId),
+                    ()-> {
+                        throw new NoSuchElementException("존재하지 않는 카테고리 입니다.");
                     });
-    }
-
-    public Long updateChildCategory(Long categoryId, RequestUpdateChildCategoryDto dto) {
-
-        Optional<Category> originCategory = categoryRepository.findById(categoryId);
-        if(!originCategory.isPresent()) {
-            throw new CategoryIsNotExists("존재하지 않는 카테고리입니다.");
         }
 
-        Category childCategoryId = originCategory.get();
-        childCategoryId.setName(dto.getChildName());
-        categoryRepository.save(childCategoryId);
-
-        return childCategoryId.getId();
-
     }
 
+    public Long updateChildCategory(Long categoryId, RequestUpdateChildCategoryDto dto, String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+        if(member == null) {
+            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+        }else{
+            Optional<Category> originCategory = categoryRepository.findById(categoryId);
+            if(!originCategory.isPresent()) {
+                throw new CategoryIsNotExists("존재하지 않는 카테고리입니다.");
+            }
+
+            Category childCategoryId = originCategory.get();
+            childCategoryId.setName(dto.getChildName());
+            categoryRepository.save(childCategoryId);
+
+            return childCategoryId.getId();
+
+        }
+
+    }
 
 }
