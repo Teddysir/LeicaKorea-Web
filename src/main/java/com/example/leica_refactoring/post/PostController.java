@@ -3,11 +3,13 @@ package com.example.leica_refactoring.post;
 import com.example.leica_refactoring.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
 
 @Slf4j
 @RestController
@@ -20,22 +22,22 @@ public class PostController {
 
     // 전체 게시물 조회
     @GetMapping("/")
-    public ResponsePostListDto post(){
-        ResponsePostListDto all = postService.findAll();
+    public ResponsePostListDto post(Pageable pageable){
+        ResponsePostListDto all = postService.findAll(pageable);
         return all;
     }
 
     // 카테고리별 게시물 조회(부모 카테고리 기준)
     @GetMapping("/find/post/{parentCategory}")
-    public ResponsePostListDto findAllPostByParentCategory(@PathVariable String parentCategory){
-        ResponsePostListDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory);
+    public ResponsePostListDto findAllPostByParentCategory(@PathVariable String parentCategory, Pageable pageable){
+        ResponsePostListDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory, pageable);
         return allPostByParentCategory;
     }
 
     // 카테고리별 게시물 조회(자식 카테고리 기준)
     @GetMapping("/find/post/{parentCategory}/{childCategory}")
-    public ResponsePostListDto findAllPostByChildCategory(@PathVariable String parentCategory, @PathVariable String childCategory){
-        ResponsePostListDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory);
+    public ResponsePostListDto findAllPostByChildCategory(@PathVariable String parentCategory, @PathVariable String childCategory, Pageable pageable){
+        ResponsePostListDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory, pageable);
         return allPostByChildCategory;
     }
 
@@ -62,10 +64,10 @@ public class PostController {
 
     // 자기 자신만 가능!
     @PutMapping("/post/{id}")
-    public Long updatePost(@RequestBody RequestPostDto requestPostDto, @PathVariable Long id,
+    public Long updatePost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto, @PathVariable Long id,
                            @AuthenticationPrincipal UserDetails userDetails){
 
-        Long update = postService.update(id, requestPostDto, userDetails.getUsername());
+        Long update = postService.update(id, requestPostWithSearchableDto, userDetails.getUsername());
         return update;
     }
 

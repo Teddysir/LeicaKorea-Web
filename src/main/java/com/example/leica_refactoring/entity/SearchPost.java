@@ -1,15 +1,12 @@
 package com.example.leica_refactoring.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
+@Getter @Setter
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class SearchPost {
 
