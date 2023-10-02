@@ -17,7 +17,6 @@ public class ResponsePostOneDto {
     private String subTitle;
     private String content;
     private String thumbnail;
-    private String writer;
     private String category;
     private String parentCategory;
 

@@ -1,9 +1,6 @@
 package com.example.leica_refactoring.category;
 
-import com.example.leica_refactoring.dto.RequestChildCategoryDto;
-import com.example.leica_refactoring.dto.RequestParentCategoryDto;
-import com.example.leica_refactoring.dto.RequestUpdateChildCategoryDto;
-import com.example.leica_refactoring.dto.ResponseChildCategoryDto;
+import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.member.MemberRepository;
@@ -25,6 +22,47 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+
+//    public List<ResponseParentCategoryDto> findAllParentCategory() {
+//
+//        List<Long> allParentCategoryIds = categoryRepository.findParentCategoryIdsByParentIsNull();
+//        List<Category> allParentCategory = categoryRepository.findAllById(allParentCategoryIds);
+//
+//        return allParentCategory.stream()
+//                .map(this::mapToResponseDto)
+//                .collect(Collectors.toList());
+//    }
+//
+//    private ResponseParentCategoryDto mapToResponseDto(Category category) {
+//        return ResponseParentCategoryDto.builder()
+//                .name(category.getName())
+//                .parent(mapToCategoryDto(category.getParent()))
+//                .build();
+//    }
+//
+//    private CategoryDto mapToCategoryDto(Category category) {
+//        if (category == null) {
+//            return null;
+//        }
+//        return CategoryDto.builder()
+//                .id(category.getId())
+//                .name(category.getName())
+//                .build();
+//    }
+
+    public List<ResponseParentCategoryDto> getParentCategories() {
+        List<Category> parentCategories = categoryRepository.findByParentIsNull();
+        return parentCategories.stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+    }
+
+        private ResponseParentCategoryDto mapToResponseDto(Category category) {
+        return ResponseParentCategoryDto.builder()
+                .name(category.getName())
+                .id(category.getId())
+                .build();
+    }
 
     public List<ResponseChildCategoryDto> findAllChildCategory(String parentCategory) {
             Category category = categoryRepository.findByName(parentCategory);

@@ -238,7 +238,6 @@ public class PostService {
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
                     .parentCategory(post.getChildCategory() != null ? post.getChildCategory().getParent().getName() : null)
-                    .writer(post.getMember() != null ? post.getMember().getMemberId() : null)
                     .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
                     .build();
         } else {

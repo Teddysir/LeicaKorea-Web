@@ -1,9 +1,6 @@
 package com.example.leica_refactoring.category;
 
-import com.example.leica_refactoring.dto.RequestChildCategoryDto;
-import com.example.leica_refactoring.dto.RequestParentCategoryDto;
-import com.example.leica_refactoring.dto.RequestUpdateChildCategoryDto;
-import com.example.leica_refactoring.dto.ResponseChildCategoryDto;
+import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +16,19 @@ import java.util.NoSuchElementException;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
+
+    @GetMapping("/category")
+    public List<ResponseParentCategoryDto> getParentCategories() {
+        List<ResponseParentCategoryDto> parentCategories = categoryService.getParentCategories();
+        return parentCategories;
+    }
+
+//    @GetMapping("/category")
+//    public List<ResponseParentCategoryDto> findAllParentCategory() {
+//        return categoryService.findAllParentCategory();
+//    }
+
 
     @GetMapping("/category/{parentCategory}")
     public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategory(@PathVariable String parentCategory){

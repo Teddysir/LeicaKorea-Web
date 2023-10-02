@@ -34,10 +34,10 @@ public class S3FileUploadService {
         if (member == null) {
             throw new UsernameNotFoundException("유저가 존재하지 않습니다.");
         } else {
-            String fileName = generateFileName(file);
+//            String fileName = generateFileName(file);
             UUID uuid = UUID.randomUUID();
 
-            fileName = uuid.toString() + "_" + fileName;
+            String fileName = uuid.toString();
 
             String imageUrl = defaultUrl + fileName;
             try {
@@ -57,7 +57,7 @@ public class S3FileUploadService {
         return objectMetadata;
     }
 
-    private String generateFileName(MultipartFile file){
-        return file.getOriginalFilename();
-    }
+//    private String generateFileName(MultipartFile file){
+//        return file.getOriginalFilename();
+//    }
 }
