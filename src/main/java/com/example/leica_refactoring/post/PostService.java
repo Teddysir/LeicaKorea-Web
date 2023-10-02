@@ -9,6 +9,8 @@ import com.example.leica_refactoring.entity.SearchPost;
 import com.example.leica_refactoring.member.MemberRepository;
 import com.example.leica_refactoring.search.SearchRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,15 +72,16 @@ public class PostService {
 
 
     // 전체 게시물 반환
-    public ResponsePostListDto findAll() {
-        List<Post> all = postRepository.findAllByOrderByCreatedAtDesc();
+    public ResponsePostListDto findAll(Pageable pageable) {
+
+        Page<Post> all = postRepository.findAllByOrderByCreatedAtDesc(pageable);
+
         if (all.isEmpty()) {
             return ResponsePostListDto.builder()
                     .size(0L)
-                    .   childList(Collections.emptyList())
+                    .childList(Collections.emptyList())
                     .build();
         }else{
-            int size = all.size();
 
             List<ResponsePostDto> collect = all.stream()
                     .filter(Objects::nonNull)
@@ -86,7 +89,7 @@ public class PostService {
                     .collect(Collectors.toList());
 
             return ResponsePostListDto.builder()
-                    .size((long) size)
+                    .size(all.getTotalElements())
                     .childList(collect)
                     .build();
         }
@@ -95,33 +98,48 @@ public class PostService {
 
 
     // 부모 카테고리안에 존재하는 모든 게시물 반환
-    public ResponsePostListDto findAllPostByParentCategory(String parentName) {
+    public ResponsePostListDto findAllPostByParentCategory(String parentName, Pageable pageable) {
         Category category = categoryRepository.findByName(parentName);
-        if(category == null){
+        if (category == null) {
             return ResponsePostListDto.builder()
                     .size(0L) // 게시물 수를 0으로 설정
                     .childList(Collections.emptyList()) // 빈 리스트 설정
                     .build();
-        }else{
-            Long totalPostCount = (long) category.getChild().stream()
-                    .flatMap(child -> child.getPosts().stream()).mapToInt(post -> 1).sum(); // 각 게시물에 대해 1을 더함
-
-            List<ResponsePostDto> postDtos = category.getChild().stream()
-                    .flatMap(child -> child.getPosts().stream()
-                            .map(this::getBuild
-                            )
-                    )
+        } else {
+            List<Post> allPosts = category.getChild().stream()
+                    .flatMap(child -> child.getPosts().stream())
+                    .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                     .collect(Collectors.toList());
 
-            return ResponsePostListDto.builder()
-                    .size(totalPostCount)
-                    .childList(postDtos)
-                    .build();
+            // 페이지네이션을 적용합니다.
+            int pageSize = pageable.getPageSize();
+            int currentPage = pageable.getPageNumber();
+            int startItem = currentPage * pageSize;
+
+            List<ResponsePostDto> postDtos;
+
+            if (startItem < allPosts.size()) {
+                int endItem = Math.min(startItem + pageSize, allPosts.size());
+                List<Post> pageContent = allPosts.subList(startItem, endItem);
+
+                postDtos = pageContent.stream()
+                        .map(this::getBuild)
+                        .collect(Collectors.toList());
+
+                return ResponsePostListDto.builder()
+                        .size((long) allPosts.size())
+                        .childList(postDtos)
+                        .build();
+            } else {
+                return ResponsePostListDto.builder()
+                        .size(0L)
+                        .childList(Collections.emptyList())
+                        .build();
+            }
         }
     }
-
     // 자식 카테고리 안에있는 모든 게시물 반환
-    public ResponsePostListDto findAllPostByChildCategory(String parentName, String childName) {
+    public ResponsePostListDto findAllPostByChildCategory(String parentName, String childName, Pageable pageable) {
         List<Category> childCategories = categoryRepository.findAllByName(childName);
 
 
@@ -139,19 +157,33 @@ public class PostService {
                     .childList(Collections.emptyList())
                     .build();
         } else {
-            Long totalPostCount = (long) selectedChildCategory.getPosts().size();
-
-            List<ResponsePostDto> postDtos = selectedChildCategory.getPosts().stream()
-                    .map(this::getBuild
-                    )
+            List<Post> allPosts = selectedChildCategory.getPosts()
+                    .stream()
+                    .sorted(Comparator.comparing(Post::getCreatedAt).reversed()) // 최신 순으로 정렬
                     .collect(Collectors.toList());
 
+            int pageSize = pageable.getPageSize();
+            int currentPage = pageable.getPageNumber();
+            int startItem = currentPage * pageSize;
+
+            List<ResponsePostDto> postDtos;
+
+            if (startItem < allPosts.size()) {
+                int endItem = Math.min(startItem + pageSize, allPosts.size());
+                postDtos = allPosts.subList(startItem, endItem).stream()
+                        .map(this::getBuild)
+                        .collect(Collectors.toList());
+            } else {
+                postDtos = Collections.emptyList();
+            }
+
             return ResponsePostListDto.builder()
-                    .size(totalPostCount)
+                    .size((long) allPosts.size())
                     .childList(postDtos)
                     .build();
         }
     }
+
 
 
 
