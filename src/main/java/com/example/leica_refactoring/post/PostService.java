@@ -156,19 +156,28 @@ public class PostService {
 
 
     // 내용 업데이트
-    public Long update(Long id, RequestPostDto requestPostDto, String username) {
+    public Long update(Long id, RequestPostWithSearchableDto requestPostDto, String username) {
         Member member = validateMemberAndPost(id, username);
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시물이 존재하지 않습니다."));
 
+        String content = requestPostDto.getSearchContent();
+        RequestPostDto post = requestPostDto.getPost();
+
+        SearchPost searchPost = searchRepository.findByPost_Id(id);
+
+        searchPost.setSearchContent(content);
+
         // 게시물 내용 업데이트
-        originPost.setTitle(requestPostDto.getTitle());
-        originPost.setContent(requestPostDto.getContent());
-        originPost.setThumbnail(requestPostDto.getThumbnail());
+        originPost.setTitle(post.getTitle());
+        originPost.setSubTitle(post.getSubTitle());
+        originPost.setContent(post.getContent());
+        originPost.setThumbnail(post.getThumbnail());
         originPost.setMember(member);
 
         // 업데이트된 게시물 저장
         Post updatedPost = postRepository.save(originPost);
+        SearchPost save = searchRepository.save(searchPost);
         return updatedPost.getId();
 
     }

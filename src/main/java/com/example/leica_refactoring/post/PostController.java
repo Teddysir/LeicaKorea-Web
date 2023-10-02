@@ -62,10 +62,10 @@ public class PostController {
 
     // 자기 자신만 가능!
     @PutMapping("/post/{id}")
-    public Long updatePost(@RequestBody RequestPostDto requestPostDto, @PathVariable Long id,
+    public Long updatePost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto, @PathVariable Long id,
                            @AuthenticationPrincipal UserDetails userDetails){
 
-        Long update = postService.update(id, requestPostDto, userDetails.getUsername());
+        Long update = postService.update(id, requestPostWithSearchableDto, userDetails.getUsername());
         return update;
     }
 
