@@ -25,33 +25,6 @@ public class CategoryService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
 
-//    public List<ResponseParentCategoryDto> findAllParentCategory() {
-//
-//        List<Long> allParentCategoryIds = categoryRepository.findParentCategoryIdsByParentIsNull();
-//        List<Category> allParentCategory = categoryRepository.findAllById(allParentCategoryIds);
-//
-//        return allParentCategory.stream()
-//                .map(this::mapToResponseDto)
-//                .collect(Collectors.toList());
-//    }
-//
-//    private ResponseParentCategoryDto mapToResponseDto(Category category) {
-//        return ResponseParentCategoryDto.builder()
-//                .name(category.getName())
-//                .parent(mapToCategoryDto(category.getParent()))
-//                .build();
-//    }
-//
-//    private CategoryDto mapToCategoryDto(Category category) {
-//        if (category == null) {
-//            return null;
-//        }
-//        return CategoryDto.builder()
-//                .id(category.getId())
-//                .name(category.getName())
-//                .build();
-//    }
-
     public List<ResponseParentCategoryDto> getParentCategories() {
         List<Category> parentCategories = categoryRepository.findByParentIsNull();
         return parentCategories.stream()
@@ -91,8 +64,16 @@ public class CategoryService {
         if(member == null) {
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
         }else{
+            Long parentCategoryCount = categoryRepository.countByParentIsNull();
+            Long maxParentCategoryCount = Long.valueOf(8);
+
+            if (parentCategoryCount >= maxParentCategoryCount) {
+                throw new ParentCategoryMaxException(maxParentCategoryCount);
+            }
+
             String parentName = parentCategory.getParentName();
             Category category = categoryRepository.findByName(parentName);
+
             if(category != null){
                 throw new CategoryAlreadyExistsException(parentName);
             }else {
@@ -128,6 +109,29 @@ public class CategoryService {
         }
     }
 
+    public void deleteParentCategory(Long parentId, String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
+
+        if (member == null) {
+            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+        } else {
+            Optional<Category> parentCategory = categoryRepository.findByIdAndParentIsNull(parentId);
+
+            parentCategory.ifPresentOrElse(
+                    c -> {
+                        if (c.getChild().isEmpty()) {
+                            categoryRepository.deleteById(parentId);
+                        } else {
+                            throw new IllegalStateException("자식 카테고리가 존재하여 삭제할 수 없습니다.");
+                        }
+                    },
+                    () -> {
+                        throw new NoSuchElementException("존재하지 않는 부모 카테고리입니다.");
+                    });
+        }
+    }
+
+
     public void deleteCategory(Long categoryId, String memberId) {
         Member member = memberRepository.findByMemberId(memberId);
 
@@ -153,11 +157,11 @@ public class CategoryService {
                 throw new CategoryIsNotExists("존재하지 않는 카테고리입니다.");
             }
 
-            Category childCategoryId = originCategory.get();
-            childCategoryId.setName(dto.getChildName());
-            categoryRepository.save(childCategoryId);
+            Category CategoryId = originCategory.get();
+            CategoryId.setName(dto.getCategoryName());
+            categoryRepository.save(CategoryId);
 
-            return childCategoryId.getId();
+            return CategoryId.getId();
 
         }
 
