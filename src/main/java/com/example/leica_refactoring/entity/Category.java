@@ -30,5 +30,4 @@ public class Category {
     @OnDelete(action = OnDeleteAction.CASCADE) // 자식 카테고리 삭제시 포함된 게시물 모두 삭제
     private final List<Post> posts = new ArrayList<>();
 
-
 }
