@@ -1,6 +1,7 @@
 package com.example.leica_refactoring.entity;
 
 import lombok.*;
+import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -26,8 +27,9 @@ public class Category {
     @OneToMany(mappedBy = "parent")
     private final List<Category> child = new ArrayList<>();
 
-    @OneToMany(mappedBy = "childCategory")
     @OnDelete(action = OnDeleteAction.CASCADE) // 자식 카테고리 삭제시 포함된 게시물 모두 삭제
+    @OneToMany(mappedBy = "childCategory")
     private final List<Post> posts = new ArrayList<>();
+
 
 }

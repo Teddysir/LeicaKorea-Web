@@ -1,6 +1,8 @@
 package com.example.leica_refactoring.entity;
 
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -11,6 +13,7 @@ import javax.persistence.*;
 public class Post extends PostTime {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Long id;
 
     @ManyToOne()
@@ -37,6 +40,5 @@ public class Post extends PostTime {
 
     @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true) // post 필드를 통해 양방향 관계를 맺게해줌
     private SearchPost searchPost; // CASCADE 설정도 해주었다.
-
 
 }

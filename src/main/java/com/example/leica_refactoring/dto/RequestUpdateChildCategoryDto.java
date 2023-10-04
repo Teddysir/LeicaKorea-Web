@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class RequestUpdateChildCategoryDto {
-    private String childName;
+    private String categoryName;
 
-    public void RequestChildCategoryDto(String childName){
-        this.childName = childName;
+    public void RequestChildCategoryDto(String categoryName){
+        this.categoryName = categoryName;
     }
 }
