@@ -56,9 +56,9 @@ public class PostController {
         return ResponseEntity.ok().body("{\"postId\": " + save + "}");
     }
 
-    @GetMapping("/post/{id}")
+    @GetMapping("/post/find/{id}")
     @Operation(summary = "하나의 게시물 조회")
-    public ResponsePostOneDto createPost(@PathVariable Long id){
+    public ResponsePostOneDto findPost(@PathVariable Long id){
 
         ResponsePostOneDto save = postService.showPost(id);
 
