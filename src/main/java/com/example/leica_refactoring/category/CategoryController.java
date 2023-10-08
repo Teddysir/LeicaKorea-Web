@@ -51,7 +51,7 @@ public class CategoryController {
 
     @Operation(summary = "부모, 자식 카테고리 수정 (유저권한 필요)")
     // 부모, 자식 카테고리 모두 같이 사용 가능
-    @PutMapping("/category/{categoryId}")
+    @PutMapping("/category/update/{categoryId}")
     public Long updateChildCategory(@RequestBody RequestUpdateChildCategoryDto dto, @PathVariable Long categoryId ,@AuthenticationPrincipal UserDetails userDetails){
         Long update = categoryService.updateChildCategory(categoryId, dto, userDetails.getUsername());
         return update;
