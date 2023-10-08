@@ -23,10 +23,11 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi categoryApi() {
         Info info = new Info().title("카테고리 관련 API").version("v0.1");
+        String[] paths = {"/category/**"};
 
         return GroupedOpenApi.builder()
                 .group("category")
-                .pathsToMatch("/category/**")
+                .pathsToMatch(paths)
                 .displayName("Category's API")
                 .addOpenApiCustomiser(api -> api.setInfo(info))
                 .build();
