@@ -72,7 +72,7 @@ public class CategoryController {
 
 
     @Operation(summary = "자식 카테고리 삭제 (유저권한 필요)")
-    @DeleteMapping("/category/{categoryId}")
+    @DeleteMapping("/category/child/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId, @AuthenticationPrincipal UserDetails userDetails){
         try {
             categoryService.deleteCategory(categoryId, userDetails.getUsername());
