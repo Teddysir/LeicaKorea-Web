@@ -51,7 +51,7 @@ public class CategoryController {
 
     @Operation(summary = "부모, 자식 카테고리 수정 (유저권한 필요)")
     // 부모, 자식 카테고리 모두 같이 사용 가능
-    @PutMapping("/category/update/{categoryId}")
+    @PutMapping("/category/{categoryId}")
     public Long updateChildCategory(@RequestBody RequestUpdateChildCategoryDto dto, @PathVariable Long categoryId ,@AuthenticationPrincipal UserDetails userDetails){
         Long update = categoryService.updateChildCategory(categoryId, dto, userDetails.getUsername());
         return update;
@@ -72,7 +72,7 @@ public class CategoryController {
 
 
     @Operation(summary = "자식 카테고리 삭제 (유저권한 필요)")
-    @DeleteMapping("/category/{categoryId}")
+    @DeleteMapping("/category/child/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId, @AuthenticationPrincipal UserDetails userDetails){
         try {
             categoryService.deleteCategory(categoryId, userDetails.getUsername());
