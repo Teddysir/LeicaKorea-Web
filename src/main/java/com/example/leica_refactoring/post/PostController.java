@@ -2,9 +2,12 @@ package com.example.leica_refactoring.post;
 
 import com.example.leica_refactoring.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,24 +27,45 @@ public class PostController {
 
     @Operation(summary = "모든 게시물 조회")
     @GetMapping("/post")
-    public PaginationDto post(Pageable pageable){
-        PaginationDto all = postService.findAll(pageable);
+    public PaginationDto post(
+            @RequestParam(defaultValue = "0")
+            @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
+            int size){
+        PaginationDto all = postService.findAll(PageRequest.of(page, size));
         return all;
     }
 
     // 카테고리별 게시물 조회(부모 카테고리 기준)
     @Operation(summary = "카테고리별 게시물 조회(부모 카테고리 기준")
     @GetMapping("/post/{parentCategory}")
-    public PaginationDto findAllPostByParentCategory(@PathVariable String parentCategory, Pageable pageable){
-        PaginationDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory, pageable);
+    public PaginationDto findAllPostByParentCategory(
+            @PathVariable String parentCategory,
+            @RequestParam(defaultValue = "0")
+            @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
+            int size){
+        PaginationDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory, PageRequest.of(page, size));
         return allPostByParentCategory;
     }
 
     // 카테고리별 게시물 조회(자식 카테고리 기준)
     @GetMapping("/post/{parentCategory}/{childCategory}")
     @Operation(summary = "카테고리별 게시물 조회(자식 카테고리 기준)")
-    public PaginationDto findAllPostByChildCategory(@PathVariable String parentCategory, @PathVariable String childCategory, Pageable pageable){
-        PaginationDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory, pageable);
+    public PaginationDto findAllPostByChildCategory(
+            @PathVariable String parentCategory,
+            @PathVariable String childCategory,
+            @RequestParam(defaultValue = "0")
+            @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
+            int size){
+        PaginationDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory, PageRequest.of(page,size));
         return allPostByChildCategory;
     }
 
