@@ -176,7 +176,7 @@ public class PostService {
             return PaginationDto.builder()
                     .lastPage(isLastPage)
                     .totalPage(totalPages)
-                    .size((long) allPosts.size())
+                    .totalElement((long) allPosts.size())
                     .childList(postDtos)
                     .build();
         }
@@ -287,7 +287,7 @@ public class PostService {
         return PaginationDto.builder()
                 .totalPage(pageSize)
                 .lastPage(isLast)
-                .size(size)
+                .totalElement(size)
                 .childList(childList)
                 .build();
     }

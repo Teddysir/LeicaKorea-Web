@@ -12,6 +12,6 @@ public class PaginationDto {
 
     private Long totalPage;
     private Boolean lastPage;
-    private Long size;
+    private Long totalElement;
     private List<ResponsePostDto> childList = new ArrayList<>();
 }

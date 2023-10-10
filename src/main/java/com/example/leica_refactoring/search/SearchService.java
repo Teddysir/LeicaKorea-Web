@@ -69,7 +69,7 @@ public class SearchService {
         PaginationSearchDto build = PaginationSearchDto.builder()
                 .lastPage(isLastPage)
                 .totalPage(totalPages)
-                .size(size)
+                .totalElement(size)
                 .childList(collect)
                 .build();
 

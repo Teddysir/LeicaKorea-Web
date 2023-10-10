@@ -14,6 +14,6 @@ import java.util.List;
 public class PaginationSearchDto {
     private Long totalPage;
     private Boolean lastPage;
-    private Long size;
+    private Long totalElement;
     private List<ResponseSearchPostDto> childList = new ArrayList<>();
 }
