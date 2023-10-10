@@ -7,10 +7,15 @@ import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.member.MemberRepository;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -39,14 +44,12 @@ public class CategoryService {
                 .build();
     }
 
-    public List<ResponseChildCategoryDto> findAllChildCategory(String parentCategory) {
-            Category category = categoryRepository.findByName(parentCategory);
-
+    public PaginationCategoryDto findAllChildCategory(String parentCategory, Pageable pageable) {
+        Category category = categoryRepository.findByName(parentCategory);
 
         List<ResponseChildCategoryDto> childCategoryDtos = category.getChild().stream()
                 .map(childCategory -> {
                     List<Post> numbersOfPost = postRepository.findByChildCategory(childCategory);
-                    // ResponseChildCategoryDto.builder()를 호출하고 필드를 적절히 매핑한 후 객체를 생성하고 반환합니다.
                     return ResponseChildCategoryDto.builder()
                             .id(childCategory.getId())
                             .size(numbersOfPost.size())
@@ -55,8 +58,22 @@ public class CategoryService {
                 })
                 .collect(Collectors.toList());
 
-        return childCategoryDtos;
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), childCategoryDtos.size());
 
+
+
+        long totalPage = (long) Math.ceil((double) childCategoryDtos.size() / pageable.getPageSize());
+        boolean isLastPage = !pageable.isPaged() || pageable.getPageNumber() >= totalPage - 1;
+        long totalElement = (long) childCategoryDtos.size();
+
+        if (start >= childCategoryDtos.size() || start >= end) {
+            return new PaginationCategoryDto(totalPage, true, totalElement, Collections.emptyList());
+        }
+
+        List<ResponseChildCategoryDto> paginatedChildCategoryDtos = childCategoryDtos.subList(start, end);
+
+        return new PaginationCategoryDto(totalPage, isLastPage, totalElement, paginatedChildCategoryDtos);
     }
     public Long createParentCategory(RequestParentCategoryDto parentCategory, String memberId) {
         Member member = memberRepository.findByMemberId(memberId);

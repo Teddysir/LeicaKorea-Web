@@ -3,8 +3,13 @@ package com.example.leica_refactoring.category;
 import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,8 +36,15 @@ public class CategoryController {
 
     @Operation(summary = "부모 카테고리 밑에있는 하위 카테고리 조회")
     @GetMapping("/category/{parentCategory}") // 부모카테고리 밑에있는 하위카테고리 조회
-    public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategory(@PathVariable String parentCategory){
-        List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentCategory);
+    public PaginationCategoryDto findAllChildCategoryByParentCategory(
+            @PathVariable String parentCategory,
+            @RequestParam(defaultValue = "0")
+            @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
+            int page,
+            @RequestParam(defaultValue = "10")
+            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
+            int size){
+        PaginationCategoryDto allChildCategory = categoryService.findAllChildCategory(parentCategory, PageRequest.of(page, size));
 
         return allChildCategory;
     }
