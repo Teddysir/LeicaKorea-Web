@@ -18,8 +18,8 @@ public class MailService {
         try {
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
-            simpleMailMessage.setTo("jajaekwa@naver.com");
-            simpleMailMessage.setSubject("[Leica] 견적 요청 메일입니다.");
+            simpleMailMessage.setTo("smwfkim2@naver.com"); // 이거 고정이야 아버님메일
+            simpleMailMessage.setSubject("[NTS] 견적 요청 메일입니다.");
             simpleMailMessage.setText(dto.getContent());
 
             javaMailSender.send(simpleMailMessage);
