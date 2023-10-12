@@ -2,17 +2,24 @@ package com.example.leica_refactoring.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
 @JsonDeserialize(builder = RequestPostDto.Builder.class)
 public class RequestPostDto {
 
+    @Schema(description = "제목", example = "광학 현미경")
     private String title;
+    @Schema(description = "내용", example = "광학 현미경 내용")
     private String content;
+    @Schema(description = "서브타이틀", example = "서브타이틀")
     private String subTitle;
+    @Schema(description = "썸네일", example = "썸네일")
     private String thumbnail;
+    @Schema(description = "부모 카테고리", example = "부모 카테고리")
     private String parentName;
+    @Schema(description = "자식 카테고리", example = "자식 카테고리")
     private String childName;
 
 

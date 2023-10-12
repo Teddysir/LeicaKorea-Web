@@ -18,10 +18,10 @@ public class MemberService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByMemberId(username);
+
         if(member == null){
             throw new UsernameNotFoundException(username);
         }
-
         return new MemberAccount(member);
     }
 }
