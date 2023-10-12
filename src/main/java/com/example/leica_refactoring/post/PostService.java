@@ -72,28 +72,28 @@ public class PostService {
 
 
     // 전체 게시물 반환
-    public PaginationDto findAll(Pageable pageable) {
-
-        Page<Post> all = postRepository.findAllByOrderByCreatedAtDesc(pageable);
-
+    public ResponsePostListDto findAll() {
+        List<Post> all = postRepository.findAll();
         if (all.isEmpty()) {
-            return getPaginationDto(0L, true, 0L, Collections.emptyList());
+            return ResponsePostListDto.builder()
+                    .size(0L)
+                    .childList(Collections.emptyList())
+                    .build();
         }else{
-
+            int size = all.size();
 
             List<ResponsePostDto> collect = all.stream()
                     .filter(Objects::nonNull)
                     .map(this::getBuild)
                     .collect(Collectors.toList());
 
-            boolean isLastPage = !all.hasNext();
-            int totalPages = all.getTotalPages();
-
-            return getPaginationDto((long)totalPages, isLastPage, all.getTotalElements(), collect);
-
-        }
+            return ResponsePostListDto.builder()
+                    .size((long) size)
+                    .childList(collect)
+                    .build();}
 
     }
+
 
 
     // 부모 카테고리안에 존재하는 모든 게시물 반환
