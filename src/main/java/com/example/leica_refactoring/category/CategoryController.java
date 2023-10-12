@@ -1,10 +1,12 @@
 package com.example.leica_refactoring.category;
 
 import com.example.leica_refactoring.dto.*;
-import com.example.leica_refactoring.entity.Category;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,7 +33,8 @@ public class CategoryController {
 
     @Operation(summary = "부모 카테고리 밑에있는 하위 카테고리 조회")
     @GetMapping("/category/{parentCategory}") // 부모카테고리 밑에있는 하위카테고리 조회
-    public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategory(@PathVariable String parentCategory){
+    public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategory(
+            @PathVariable String parentCategory){
         List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentCategory);
 
         return allChildCategory;

@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,14 +26,8 @@ public class PostController {
 
     @Operation(summary = "모든 게시물 조회")
     @GetMapping("/post")
-    public PaginationDto post(
-            @RequestParam(defaultValue = "0")
-            @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
-            int page,
-            @RequestParam(defaultValue = "10")
-            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
-            int size){
-        PaginationDto all = postService.findAll(PageRequest.of(page, size));
+    public ResponsePostListDto post(){
+        ResponsePostListDto all = postService.findAll();
         return all;
     }
 

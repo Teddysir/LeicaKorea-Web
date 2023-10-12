@@ -7,10 +7,15 @@ import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.member.MemberRepository;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -40,7 +45,7 @@ public class CategoryService {
     }
 
     public List<ResponseChildCategoryDto> findAllChildCategory(String parentCategory) {
-            Category category = categoryRepository.findByName(parentCategory);
+        Category category = categoryRepository.findByName(parentCategory);
 
 
         List<ResponseChildCategoryDto> childCategoryDtos = category.getChild().stream()
