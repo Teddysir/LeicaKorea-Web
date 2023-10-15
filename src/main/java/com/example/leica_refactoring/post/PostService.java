@@ -73,7 +73,7 @@ public class PostService {
 
     // 전체 게시물 반환
     public ResponsePostListDto findAll() {
-        List<Post> all = postRepository.findAll();
+        List<Post> all = postRepository.findTop5ByOrderByCreatedAtDesc();
         if (all.isEmpty()) {
             return ResponsePostListDto.builder()
                     .size(0L)
