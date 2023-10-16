@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://localhost:3000")
+@CrossOrigin(origins = {"https://localhost:3000","https://nts-microscope.com"})
 @Tag(name = "S3 Controller", description = "S3 API")
 public class FileUploadController {
 

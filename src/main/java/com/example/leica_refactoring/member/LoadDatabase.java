@@ -18,8 +18,7 @@ public class LoadDatabase {
     @Bean
     CommandLineRunner initDatabase(MemberRepository repository){
         return args -> {
-            log.info("Preloading"+repository.save(new Member(1L, "admin", "admin", passwordEncoder.encode("12345678"))));
-
+            log.info("Preloading"+repository.save(new Member(2L, "NTS2023", "admin", passwordEncoder.encode("K67785445**"))));
         };
     }
 }

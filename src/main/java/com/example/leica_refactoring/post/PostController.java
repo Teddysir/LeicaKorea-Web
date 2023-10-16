@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://localhost:3000")
+@CrossOrigin(origins = {"https://localhost:3000","https://nts-microscope.com"})
 @Tag(name = "Post Controller", description = "Post API")
 public class PostController {
 

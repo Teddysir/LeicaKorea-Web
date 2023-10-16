@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://localhost:3000")
+@CrossOrigin(origins = {"https://localhost:3000","https://nts-microscope.com"})
 @Tag(name = "Search Controller", description = "Search API")
 public class SearchController {
 
