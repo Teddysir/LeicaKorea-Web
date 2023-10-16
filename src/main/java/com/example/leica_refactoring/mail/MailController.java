@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Send Mail Controller", description = "Send Mail API")
-@CrossOrigin(origins = {"https://localhost:3000","https://nts-microscope.com"})
+@CrossOrigin(origins = {"https://localhost:3000","https://www.nts-microscope.com"})
 public class MailController {
 
     private final MailService mailService;

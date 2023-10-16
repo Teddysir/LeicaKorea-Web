@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"https://localhost:3000","https://nts-microscope.com"})
+@CrossOrigin(origins = {"https://localhost:3000","https://www.nts-microscope.com"})
 @Tag(name = "Category Controller", description = "Category API")
 public class CategoryController {
 
