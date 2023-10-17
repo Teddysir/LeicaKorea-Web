@@ -26,24 +26,8 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
-    @PostMapping("/test/login")
+    @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody @Validated RequestLoginDto dto, HttpServletResponse response){
-
-//        String memberId = dto.getMemberId();
-//        String password = dto.getPassword();
-//
-//        Member dbMember = memberRepository.findByMemberId(memberId);
-//
-//        if (!dbMember.getMemberId().equals(memberId)) {
-//            throw new LoginFailException("Login Fail. MemberId is not matched");
-//        }
-//
-//        String encodedPassword = passwordEncoder.encode(password);
-//
-//        if (!passwordEncoder.matches(encodedPassword, dbMember.getPassword())) {
-//            throw new LoginFailException("Login Fail. Password is not matched");
-//        }
-
         String msg = authService.login(dto,response);
         return new ResponseEntity<>(msg, HttpStatus.OK);
     }
