@@ -19,12 +19,12 @@ public class AuthoritiesValidator implements ConstraintValidator<Authorities,Str
             return false;
         }
         for(String authority : authorities) {
-            if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN")) continue;
+            if(authority.equals("ROLE_USER")) continue;
 
             context.disableDefaultConstraintViolation();
 
             context.buildConstraintViolationWithTemplate(
-                    MessageFormat.format("only ROLE_USER and ROLE_ADMIN",null)
+                    MessageFormat.format("only ROLE_USER",null)
             ).addConstraintViolation();
             return false;
         }

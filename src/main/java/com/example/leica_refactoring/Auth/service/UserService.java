@@ -27,18 +27,20 @@ public class UserService {
     public String signUp(SignUpRequestDto dto){
 
         Set<Authority> authorities = new HashSet<>();
-        for(String authorityStr : dto.getAuthorities()) {
-            switch(authorityStr) {
-                case "ROLE_USER":
-                    authorities.add(new Authority(AuthorityName.ROLE_USER));
-                    break;
-                case "ROLE_ADMIN":
-                    authorities.add(new Authority(AuthorityName.ROLE_ADMIN));
-                    break;
-                default:
-                    break;
-            }
-        }
+
+        authorities.add(new Authority(AuthorityName.ROLE_USER)); // 기본으론 USER권한만 부여가능 관리자만 ADMIN 계정 추가 가능하다.
+//        for(String authorityStr : dto.getAuthorities()) {
+//            switch(authorityStr) {
+//                case "ROLE_USER":
+//                    authorities.add(new Authority(AuthorityName.ROLE_USER));
+//                    break;
+//                case "ROLE_ADMIN":
+//                    authorities.add(new Authority(AuthorityName.ROLE_ADMIN));
+//                    break;
+//                default:
+//                    break;
+//            }
+//        }
 
         Member member = Member.builder()
                 .memberId(dto.getMemberId())
@@ -54,10 +56,10 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserResDto getMemberId() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Long id = userDetails.getId();
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Long id = userDetails.getId();
 
-        Member member = memberRepository.findById(id).orElseThrow(()-> new NoSuchElementException());
+            Member member = memberRepository.findById(id).orElseThrow(()-> new NoSuchElementException());
 
         return UserResDto.builder()
                 .memberId(member.getMemberId())

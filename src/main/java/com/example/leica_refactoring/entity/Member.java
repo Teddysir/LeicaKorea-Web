@@ -32,10 +32,10 @@ public class Member {
     private String memberId;
 
     @Column(nullable = false)
-    private String username;
+    private String password;
 
     @Column(nullable = false)
-    private String password;
+    private String username;
 
     @ManyToMany
     @JoinTable(
