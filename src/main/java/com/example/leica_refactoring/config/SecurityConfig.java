@@ -1,5 +1,6 @@
 package com.example.leica_refactoring.config;
 
+import com.example.leica_refactoring.Auth.exception.CustomExpiredSessionStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -18,8 +21,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @Order(Ordered.HIGHEST_PRECEDENCE) // Config 우선진입
 public class SecurityConfig {
-
-
             @Bean
             public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
                 http.authorizeRequests()
@@ -52,10 +53,18 @@ public class SecurityConfig {
                .and()
                    .formLogin().disable()
                    .sessionManagement()
-                   .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                   .sessionFixation()
-                   .none();
+                        .sessionFixation().changeSessionId()
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .maximumSessions(1)
+                        .expiredSessionStrategy(new CustomExpiredSessionStrategy())
+                        .maxSessionsPreventsLogin(false)  // 새로 로그인할경우 기존 로그인한 유저가 로그아웃됨
+                        .sessionRegistry(sessionRegistry());
         return http.build();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+                return new SessionRegistryImpl();
     }
 
 }
