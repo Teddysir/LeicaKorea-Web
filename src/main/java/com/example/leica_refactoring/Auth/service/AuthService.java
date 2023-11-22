@@ -11,10 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +19,7 @@ public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public String login(RequestLoginDto loginDto, HttpServletResponse response, HttpServletRequest request){
+    public String login(RequestLoginDto loginDto, HttpServletResponse response){
         try {
             // authenticationToken 인증용 객체
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getMemberId(),loginDto.getPassword());
@@ -32,18 +29,13 @@ public class AuthService {
             // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String sessionId = UUID.randomUUID().toString();
-
-            ResponseCookie sessionCookie = ResponseCookie.from("my-cookie","my-value")
+            ResponseCookie cookie = ResponseCookie.from("my-cookie",authenticationToken.toString())
                     .secure(true)
                     .sameSite("None")
                     .httpOnly(true)
                     .build();
 
-            response.addHeader("Set-Cookie",sessionCookie.toString());
-
-            HttpSession session = request.getSession();
-            session.setAttribute("sessionId", sessionId);
+            response.addHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
         } catch (Exception e) {
