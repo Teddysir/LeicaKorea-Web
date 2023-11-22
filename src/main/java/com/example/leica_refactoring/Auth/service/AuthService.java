@@ -35,8 +35,8 @@ public class AuthService {
                     .httpOnly(true)
                     .build();
 
-            response.addHeader("Set-Cookie",cookie.toString());
-            response.setHeader("Set-Cookie",cookie.toString());
+            response.addHeader("Set-Cookie", "my-cookie=my-value; Secure; SameSite=None; HttpOnly");
+            response.setHeader("Set-Cookie", "my-cookie=my-value; Secure; SameSite=None; HttpOnly");
 
             return "Login Success";
         } catch (Exception e) {
