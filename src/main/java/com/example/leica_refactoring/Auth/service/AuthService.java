@@ -29,7 +29,7 @@ public class AuthService {
             // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
+            ResponseCookie cookie = ResponseCookie.from("my-cookie",authentication.getPrincipal().toString())
                     .secure(true)
                     .sameSite("None")
                     .httpOnly(true)
