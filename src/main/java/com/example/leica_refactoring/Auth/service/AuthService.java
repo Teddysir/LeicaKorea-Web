@@ -35,6 +35,7 @@ public class AuthService {
                     .httpOnly(true)
                     .build();
 
+            response.setHeader("Set-Cookie",cookie.toString());
             response.addHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
