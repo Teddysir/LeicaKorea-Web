@@ -10,7 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Service
@@ -29,7 +32,10 @@ public class AuthService {
             // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            ResponseCookie cookie = ResponseCookie.from("my-cookie",authenticationToken.toString())
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String sessionId = request.getSession().getId();
+
+            ResponseCookie cookie = ResponseCookie.from("my-cookie",sessionId)
                     .secure(true)
                     .sameSite("None")
                     .httpOnly(true)
