@@ -31,12 +31,10 @@ public class AuthService {
 
             ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
                     .secure(true)
-                    .sameSite("None")
                     .httpOnly(true)
                     .build();
 
-            response.addHeader("Set-Cookie", "my-cookie=my-value; Secure; SameSite=None; HttpOnly");
-            response.setHeader("Set-Cookie", "my-cookie=my-value; Secure; SameSite=None; HttpOnly");
+            response.addHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
         } catch (Exception e) {
