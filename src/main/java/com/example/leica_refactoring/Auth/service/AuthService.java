@@ -7,7 +7,6 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
@@ -27,15 +26,8 @@ public class AuthService {
             // .authenticate(): 접근 주체 인증(CustomUserDetailsService의 loadUserByUsername 실행)
             // 인증이 완료된 경우 authentication 객체를 반환
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(authentication);
-
-            // SecurityContextHolder에 설정
-            SecurityContextHolder.setContext(securityContext);
-
-//            // authentication 객체 세션에 저장
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // authentication 객체 세션에 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
                     .secure(true)
