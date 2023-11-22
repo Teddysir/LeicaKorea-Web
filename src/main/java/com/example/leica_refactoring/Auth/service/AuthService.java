@@ -32,16 +32,13 @@ public class AuthService {
             // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            String sessionId = request.getSession().toString();
-
-            ResponseCookie cookie = ResponseCookie.from("my-cookie",sessionId)
-                    .secure(true)
-                    .sameSite("None")
-                    .httpOnly(true)
-                    .build();
-
-            response.addHeader("Set-Cookie",cookie.toString());
+//            ResponseCookie cookie = ResponseCookie.from("my-cookie",)
+//                    .secure(true)
+//                    .sameSite("None")
+//                    .httpOnly(true)
+//                    .build();
+//
+//            response.addHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
         } catch (Exception e) {
