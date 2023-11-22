@@ -31,6 +31,7 @@ public class AuthService {
 
             ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
                     .sameSite("None")
+                    .secure(true)
                     .build();
 
             response.setHeader("Set-Cookie",cookie.toString());
