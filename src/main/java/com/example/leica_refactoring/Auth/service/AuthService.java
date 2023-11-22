@@ -11,7 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,24 +22,28 @@ public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    public String login(RequestLoginDto loginDto, HttpServletResponse response){
+    public String login(RequestLoginDto loginDto, HttpServletResponse response, HttpServletRequest request){
         try {
             // authenticationToken 인증용 객체
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getMemberId(),loginDto.getPassword());
             // .authenticate(): 접근 주체 인증(CustomUserDetailsService의 loadUserByUsername 실행)
             // 인증이 완료된 경우 authentication 객체를 반환
-//            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             // authentication 객체 세션에 저장
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            ResponseCookie cookie = ResponseCookie.from("my-cookie",authentication.getPrincipal().toString())
+            String sessionId = UUID.randomUUID().toString();
+
+            ResponseCookie sessionCookie = ResponseCookie.from("my-cookie","my-value")
                     .secure(true)
                     .sameSite("None")
                     .httpOnly(true)
                     .build();
 
-            response.setHeader("Set-Cookie",cookie.toString());
-            response.addHeader("Set-Cookie",cookie.toString());
+            response.addHeader("Set-Cookie",sessionCookie.toString());
+
+            HttpSession session = request.getSession();
+            session.setAttribute("sessionId", sessionId);
 
             return "Login Success";
         } catch (Exception e) {
