@@ -29,13 +29,13 @@ public class AuthService {
             // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
-                    .secure(true)
-                    .sameSite("Lax")
-                    .httpOnly(true)
-                    .build();
-
-            response.addHeader("Set-Cookie",cookie.toString());
+//            ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
+//                    .secure(true)
+//                    .sameSite("None")
+//                    .httpOnly(true)
+//                    .build();
+//
+//            response.addHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
         } catch (Exception e) {
