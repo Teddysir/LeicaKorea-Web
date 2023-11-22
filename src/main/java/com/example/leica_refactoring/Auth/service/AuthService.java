@@ -15,6 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +25,21 @@ public class AuthService {
 
     public String login(RequestLoginDto loginDto, HttpServletResponse response){
         try {
-            // authenticationToken 인증용 객체
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getMemberId(),loginDto.getPassword());
-            // .authenticate(): 접근 주체 인증(CustomUserDetailsService의 loadUserByUsername 실행)
-            // 인증이 완료된 경우 authentication 객체를 반환
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            String sessionId = UUID.randomUUID().toString();
+
+// Create a session cookie with the session ID
+            ResponseCookie sessionCookie = ResponseCookie.from("my-cookie", sessionId)
+                    .secure(true)
+                    .sameSite("None")
+                    .httpOnly(true)
+                    .build();
+
+// Add the session cookie to the response headers
+            response.addHeader("Set-Cookie", sessionCookie.toString());
 //            ResponseCookie cookie = ResponseCookie.from("my-cookie",)
 //                    .secure(true)
 //                    .sameSite("None")
