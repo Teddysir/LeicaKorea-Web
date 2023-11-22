@@ -30,11 +30,13 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
-                    .sameSite("None")
                     .secure(true)
+                    .sameSite("None")
+                    .httpOnly(true)
                     .build();
 
             response.addHeader("Set-Cookie",cookie.toString());
+            response.setHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
         } catch (Exception e) {
