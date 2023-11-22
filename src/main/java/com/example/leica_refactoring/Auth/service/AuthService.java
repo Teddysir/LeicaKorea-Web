@@ -7,6 +7,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,20 +27,11 @@ public class AuthService {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getMemberId(),loginDto.getPassword());
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            // authentication 객체 세션에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            String sessionId = UUID.randomUUID().toString();
 
-// Create a session cookie with the session ID
-            ResponseCookie sessionCookie = ResponseCookie.from("my-cookie", sessionId)
-                    .secure(true)
-                    .sameSite("None")
-                    .httpOnly(true)
-                    .build();
-
-// Add the session cookie to the response headers
-            response.addHeader("Set-Cookie", sessionCookie.toString());
-//            ResponseCookie cookie = ResponseCookie.from("my-cookie",)
+//            ResponseCookie cookie = ResponseCookie.from()
 //                    .secure(true)
 //                    .sameSite("None")
 //                    .httpOnly(true)
