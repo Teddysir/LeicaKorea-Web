@@ -52,7 +52,7 @@ public class SecurityConfig {
                .and()
                    .formLogin().disable()
                    .sessionManagement()
-                   .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                   .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                    .sessionFixation()
                    .none();
         return http.build();
