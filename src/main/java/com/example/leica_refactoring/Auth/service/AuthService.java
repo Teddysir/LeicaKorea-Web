@@ -33,7 +33,7 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            String sessionId = request.getSession().getId();
+            String sessionId = request.getSession().toString();
 
             ResponseCookie cookie = ResponseCookie.from("my-cookie",sessionId)
                     .secure(true)
