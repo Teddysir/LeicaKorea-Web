@@ -31,6 +31,7 @@ public class AuthService {
 
             ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
                     .secure(true)
+                    .sameSite("Lax")
                     .httpOnly(true)
                     .build();
 
