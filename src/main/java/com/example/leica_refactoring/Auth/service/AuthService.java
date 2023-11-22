@@ -27,15 +27,15 @@ public class AuthService {
             // 인증이 완료된 경우 authentication 객체를 반환
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             // authentication 객체 세션에 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-//            ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
-//                    .secure(true)
-//                    .sameSite("None")
-//                    .httpOnly(true)
-//                    .build();
-//
-//            response.addHeader("Set-Cookie",cookie.toString());
+            ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
+                    .secure(true)
+                    .sameSite("None")
+                    .httpOnly(true)
+                    .build();
+
+            response.addHeader("Set-Cookie",cookie.toString());
 
             return "Login Success";
         } catch (Exception e) {
