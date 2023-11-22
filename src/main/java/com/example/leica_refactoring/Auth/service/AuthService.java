@@ -27,9 +27,9 @@ public class AuthService {
             // 인증이 완료된 경우 authentication 객체를 반환
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             // authentication 객체 세션에 저장
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            ResponseCookie cookie = ResponseCookie.from("my-cookie","my-value")
+            ResponseCookie cookie = ResponseCookie.from("my-cookie", authentication.toString())
                     .secure(true)
                     .sameSite("None")
                     .httpOnly(true)
