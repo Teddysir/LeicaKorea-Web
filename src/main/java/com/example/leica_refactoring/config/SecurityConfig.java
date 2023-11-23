@@ -18,8 +18,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 @Order(Ordered.HIGHEST_PRECEDENCE) // Config 우선진입
 public class SecurityConfig {
-
-
             @Bean
             public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
                 http.authorizeRequests()
@@ -52,7 +50,7 @@ public class SecurityConfig {
                .and()
                    .formLogin().disable()
                    .sessionManagement()
-                   .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                   .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                    .sessionFixation()
                    .none();
         return http.build();
