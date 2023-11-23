@@ -1,4 +1,4 @@
-package com.example.leica_refactoring.Auth.service;
+package com.example.leica_refactoring.jwt;
 
 import com.example.leica_refactoring.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

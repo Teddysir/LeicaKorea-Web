@@ -1,6 +1,5 @@
 package com.example.leica_refactoring.config;
 
-import com.example.leica_refactoring.Auth.exception.CustomExpiredSessionStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -56,7 +55,6 @@ public class SecurityConfig {
                         .sessionFixation().changeSessionId()
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .maximumSessions(1)
-                        .expiredSessionStrategy(new CustomExpiredSessionStrategy())
                         .maxSessionsPreventsLogin(false)  // 새로 로그인할경우 기존 로그인한 유저가 로그아웃됨
                         .sessionRegistry(sessionRegistry());
         return http.build();
