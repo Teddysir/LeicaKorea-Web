@@ -6,7 +6,7 @@ import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.entity.SearchPost;
-import com.example.leica_refactoring.Auth.service.MemberRepository;
+import com.example.leica_refactoring.member.MemberRepository;
 import com.example.leica_refactoring.search.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

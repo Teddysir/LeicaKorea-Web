@@ -4,7 +4,7 @@ import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
-import com.example.leica_refactoring.Auth.service.MemberRepository;
+import com.example.leica_refactoring.member.MemberRepository;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
