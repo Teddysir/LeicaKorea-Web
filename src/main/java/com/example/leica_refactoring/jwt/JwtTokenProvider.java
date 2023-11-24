@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Base64;
@@ -30,16 +31,9 @@ public class JwtTokenProvider {
     private long accessTokenValidTime = 60 * 60 * 1000L; // 1h
     private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L; // 7d
 
+    @PostConstruct
     public void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-    }
-
-    public String createdAccessToken(String memberId, UserRole userRole) {
-        return this.createToken(memberId, userRole, accessTokenValidTime);
-    }
-
-    public String createdRefreshToken(String memberId, UserRole userRole) {
-        return this.createToken(memberId, userRole, refreshTokenValidTime);
     }
 
     // 토큰 생성 로직
