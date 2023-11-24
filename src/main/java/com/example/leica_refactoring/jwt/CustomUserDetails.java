@@ -1,8 +1,6 @@
 package com.example.leica_refactoring.jwt;
 
 import com.example.leica_refactoring.entity.Member;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +28,7 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
-    public Member member() {
+    public Member getMember() {
         return member;
     }
 
