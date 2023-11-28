@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.security.Key;
 import java.util.Base64;
 import java.util.*;
@@ -34,6 +35,14 @@ public class JwtTokenProvider {
     @PostConstruct
     public void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
+
+    public String createAccessToken(String memberId, UserRole userRole) {
+        return this.createToken(memberId, userRole, accessTokenValidTime);
+    }
+
+    public String createRefreshToken(String memberId, UserRole userRole) {
+        return this.createToken(memberId, userRole, refreshTokenValidTime);
     }
 
     // 토큰 생성 로직
@@ -97,6 +106,14 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("JWT claims string is empty");
         }
+    }
+
+    public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
+        response.setHeader("authorization","bearer" + accessToken);
+    }
+
+    public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
+        response.setHeader("authorization","bearer" + refreshToken);
     }
 
 }

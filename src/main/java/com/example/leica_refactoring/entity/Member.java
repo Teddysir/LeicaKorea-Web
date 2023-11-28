@@ -1,9 +1,7 @@
 package com.example.leica_refactoring.entity;
 
 import com.example.leica_refactoring.jwt.UserRole;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -17,7 +15,9 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Builder
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,11 +38,4 @@ public class Member {
     @Column(nullable = false)
     private UserRole userRole;
 
-    @Builder
-    public Member(Long id, String memberId, String password, String username) {
-        this.id = id;
-        this.memberId = memberId;
-        this.password = password;
-        this.username = username;
-    }
 }
