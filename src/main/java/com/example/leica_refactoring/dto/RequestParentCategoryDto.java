@@ -11,4 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RequestParentCategoryDto {
     private String parentName;
+
+//    User user = userService.findUserByToken(request);
+//    Store store = storeRepository.findById(id).orElseThrow();
 }

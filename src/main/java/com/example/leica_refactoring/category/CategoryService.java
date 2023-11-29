@@ -5,12 +5,15 @@ import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.jwt.MemberRepository;
+import com.example.leica_refactoring.jwt.MemberService;
+import com.example.leica_refactoring.jwt.UserRole;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,6 +27,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+    private final MemberService memberService;
 
     public List<ResponseParentCategoryDto> getParentCategories() {
         List<Category> parentCategories = categoryRepository.findByParentIsNull();
@@ -58,34 +62,34 @@ public class CategoryService {
         return childCategoryDtos;
 
     }
-    public Long createParentCategory(RequestParentCategoryDto parentCategory, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
+    public Long createParentCategory(RequestParentCategoryDto parentCategory, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
 
-        if(member == null) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
-        }else{
-            Long parentCategoryCount = categoryRepository.countByParentIsNull();
-            Long maxParentCategoryCount = Long.valueOf(8);
+            if (member.getUserRole() != UserRole.ADMIN) {
+                throw new UsernameNotFoundException("유저 권한이 없습니다.");
+            } else {
+                Long parentCategoryCount = categoryRepository.countByParentIsNull();
+                Long maxParentCategoryCount = Long.valueOf(8);
 
-            if (parentCategoryCount >= maxParentCategoryCount) {
-                throw new ParentCategoryMaxException(maxParentCategoryCount);
+                if (parentCategoryCount >= maxParentCategoryCount) {
+                    throw new ParentCategoryMaxException(maxParentCategoryCount);
+                }
+
+                String parentName = parentCategory.getParentName();
+                Category category = categoryRepository.findByName(parentName);
+
+                if (category != null) {
+                    throw new CategoryAlreadyExistsException(parentName);
+                } else {
+                    Category category1 = Category.builder()
+                            .name(parentName)
+                            .parent(null)
+                            .build();
+
+                    Category save = categoryRepository.save(category1);
+                    return save.getId();
+                }
             }
-
-            String parentName = parentCategory.getParentName();
-            Category category = categoryRepository.findByName(parentName);
-
-            if(category != null){
-                throw new CategoryAlreadyExistsException(parentName);
-            }else {
-                Category category1 = Category.builder()
-                        .name(parentName)
-                        .parent(null)
-                        .build();
-
-                Category save = categoryRepository.save(category1);
-                return save.getId();
-            }
-        }
     }
 
     public Long createChildCategory(RequestChildCategoryDto childCategory, String memberId) {

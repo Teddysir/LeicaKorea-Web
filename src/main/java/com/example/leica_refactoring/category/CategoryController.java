@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jdk.jfr.Frequency;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -42,8 +44,8 @@ public class CategoryController {
 
     @Operation(summary = "부모 카테고리 생성 (유저권한 필요)")
     @PostMapping("/category/parent")
-    public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory, @AuthenticationPrincipal UserDetails userDetails){
-        return categoryService.createParentCategory(parentCategory, userDetails.getUsername());
+    public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory, HttpServletRequest request){
+        return categoryService.createParentCategory(parentCategory, request);
     }
 
     @Operation(summary = "자식 카테고리 생성 (유저권한 필요)")
