@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -108,11 +109,11 @@ public class JwtTokenProvider {
         }
     }
 
-    public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
+    public void setHeaderAccessToken(String accessToken, HttpServletResponse response) {
         response.setHeader("authorization","bearer" + accessToken);
     }
 
-    public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
+    public void setHeaderRefreshToken(String refreshToken, HttpServletResponse response) {
         response.setHeader("authorization","bearer" + refreshToken);
     }
 

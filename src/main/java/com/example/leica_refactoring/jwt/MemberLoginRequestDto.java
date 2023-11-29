@@ -1,6 +1,5 @@
 package com.example.leica_refactoring.jwt;
 
-
 import lombok.*;
 
 @Builder
@@ -12,4 +11,5 @@ public class MemberLoginRequestDto {
     private String memberId;
 
     private String password;
+
 }

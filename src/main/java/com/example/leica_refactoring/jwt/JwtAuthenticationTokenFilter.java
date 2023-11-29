@@ -30,30 +30,29 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
 
         try {
-
             if (accessToken == null && refreshToken != null) {
                 if (jwtTokenProvider.validateToken(refreshToken)) {
                     filterChain.doFilter(request, response);
+                    return;
                 }
             } else if (accessToken == null && refreshToken == null) {
                 filterChain.doFilter(request, response);
+                return;
             } else {
                 if (jwtTokenProvider.validateToken(accessToken)) {
                     this.setAuthentication(accessToken);
                 }
             }
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException();
+            return;
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
-
 
     private void setAuthentication(String token) {
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
