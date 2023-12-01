@@ -1,6 +1,9 @@
 package com.example.leica_refactoring.category;
 
 import com.example.leica_refactoring.dto.*;
+import com.example.leica_refactoring.entity.Member;
+import com.example.leica_refactoring.jwt.JwtTokenProvider;
+import com.example.leica_refactoring.jwt.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -25,6 +28,8 @@ import java.util.NoSuchElementException;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "모든 부모 카테고리 반환")
     @GetMapping("/category/parent") // 모든 부모 카테고리 반환
@@ -44,8 +49,16 @@ public class CategoryController {
 
     @Operation(summary = "부모 카테고리 생성 (유저권한 필요)")
     @PostMapping("/category/parent")
-    public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory, HttpServletRequest request){
-        return categoryService.createParentCategory(parentCategory, request);
+    public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory,HttpServletRequest request) {
+
+        String token = memberService.extractTokenFromRequest(request);
+//        return categoryService.createParentCategory(parentCategory, request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String memberId = jwtTokenProvider.getMemberId(token);
+            return categoryService.createParentCategory(parentCategory, memberId);
+        } else {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
     }
 
     @Operation(summary = "자식 카테고리 생성 (유저권한 필요)")

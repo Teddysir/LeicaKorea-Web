@@ -62,10 +62,10 @@ public class CategoryService {
         return childCategoryDtos;
 
     }
-    public Long createParentCategory(RequestParentCategoryDto parentCategory, HttpServletRequest request) {
-        Member member = memberService.findMemberByToken(request);
+    public Long createParentCategory(RequestParentCategoryDto parentCategory, String memberId) {
+        Member member = memberRepository.findByMemberId(memberId);
 
-            if (member.getUserRole() != UserRole.ADMIN) {
+            if (member == null) {
                 throw new UsernameNotFoundException("유저 권한이 없습니다.");
             } else {
                 Long parentCategoryCount = categoryRepository.countByParentIsNull();

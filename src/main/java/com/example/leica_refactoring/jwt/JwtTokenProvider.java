@@ -75,17 +75,15 @@ public class JwtTokenProvider {
         return jwtParser.parseClaimsJws(token).getBody().getSubject();
     }
 
-    public String resolveRefreshToken(HttpServletRequest request) {
-        if(request.getHeader("refreshToken") != null){
-            return request.getHeader("refreshToken").substring(7);
-        }
+    public String resolveAccessToken(HttpServletRequest request) {
+        if(request.getHeader("authorization") != null )
+            return request.getHeader("authorization").substring(7);
         return null;
     }
 
-    public String resolveAccessToken(HttpServletRequest request) {
-        if(request.getHeader("accessToken") != null){
-            return request.getHeader("accessToken").substring(7);
-        }
+    public String resolveRefreshToken(HttpServletRequest request) {
+        if(request.getHeader("refreshToken") != null )
+            return request.getHeader("refreshToken").substring(7);
         return null;
     }
 
@@ -102,19 +100,18 @@ public class JwtTokenProvider {
             throw new MalformedJwtException("Invalid JWT token");
         } catch (ExpiredJwtException e) {
             throw new ExpiredJwtException(null, null, "Token has expired");
-        } catch (UnsupportedJwtException e) {
+        } catch (UnsupportedJwtException ex) {
             throw new UnsupportedJwtException("JWT token is unsupported");
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("JWT claims string is empty");
         }
     }
 
-    public void setHeaderAccessToken(String accessToken, HttpServletResponse response) {
-        response.setHeader("authorization","bearer" + accessToken);
+    public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
+        response.setHeader("authorization", "Bearer "+ accessToken);
     }
 
-    public void setHeaderRefreshToken(String refreshToken, HttpServletResponse response) {
-        response.setHeader("authorization","bearer" + refreshToken);
+    public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
+        response.setHeader("refreshToken", "Bearer "+ refreshToken);
     }
-
 }

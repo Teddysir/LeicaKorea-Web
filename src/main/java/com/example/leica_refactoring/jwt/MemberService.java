@@ -39,13 +39,21 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(memberId, userRole);
         String refreshToken = jwtTokenProvider.createRefreshToken(memberId, userRole);
 
-        jwtTokenProvider.setHeaderAccessToken(accessToken,response);
-        jwtTokenProvider.setHeaderRefreshToken(refreshToken,response);
+        jwtTokenProvider.setHeaderAccessToken(response, accessToken);
+        jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
 
     }
 
     public Member findMemberByToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         return token == null ? null : memberRepository.findByMemberId(jwtTokenProvider.getMemberId(token));
+    }
+
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("authorization");
+        if( bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }
