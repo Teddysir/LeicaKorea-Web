@@ -24,7 +24,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final MemberRepository memberRepository;
     private final CustomUserDetailsService customUserDetailsService;
 
     @Value("${jwt.secret}")

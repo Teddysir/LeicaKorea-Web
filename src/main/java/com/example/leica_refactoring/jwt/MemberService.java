@@ -49,11 +49,4 @@ public class MemberService {
         return token == null ? null : memberRepository.findByMemberId(jwtTokenProvider.getMemberId(token));
     }
 
-    public String extractTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("authorization");
-        if( bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
 }

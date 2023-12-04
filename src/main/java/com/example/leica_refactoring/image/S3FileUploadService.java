@@ -5,12 +5,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.jwt.MemberRepository;
+import com.example.leica_refactoring.jwt.MemberService;
+import com.example.leica_refactoring.jwt.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -19,7 +22,7 @@ import java.util.UUID;
 public class S3FileUploadService {
 
     private final AmazonS3 s3Client;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
@@ -27,14 +30,13 @@ public class S3FileUploadService {
     @Value("${cloud.aws.s3.default-url}")
     private String defaultUrl;
 
-    public String uploadFile(MultipartFile file,String memberId) throws IOException {
+    public String uploadFile(MultipartFile file, HttpServletRequest request) throws IOException {
 
-        Member member = memberRepository.findByMemberId(memberId);
+        Member member = memberService.findMemberByToken(request);
 
-        if (member == null) {
-            throw new UsernameNotFoundException("유저가 존재하지 않습니다.");
+        if (member.getUserRole() != UserRole.ADMIN) {
+            throw new UsernameNotFoundException("유저가 존재하지 않습니다."); // 추후 ErrorCode 로직 수정
         } else {
-//            String fileName = generateFileName(file);
             UUID uuid = UUID.randomUUID();
 
             String fileName = uuid.toString();
@@ -50,7 +52,7 @@ public class S3FileUploadService {
     }
 
 
-    private ObjectMetadata getObjectMetadata(MultipartFile file){
+    private ObjectMetadata getObjectMetadata(MultipartFile file) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());

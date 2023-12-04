@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 
 @Slf4j
 @RestController
@@ -66,9 +68,9 @@ public class PostController {
     @PostMapping("/post")
     @Operation(summary = "게시물 생성 (유저권한 필요)")
     public ResponseEntity<String> createPost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto,
-                                             @AuthenticationPrincipal UserDetails userDetails){
+                                             HttpServletRequest request){
 
-        Long save = postService.save(requestPostWithSearchableDto, userDetails.getUsername());
+        Long save = postService.save(requestPostWithSearchableDto, request);
 
         return ResponseEntity.ok().body("{\"postId\": " + save + "}");
     }
@@ -86,17 +88,17 @@ public class PostController {
     @PutMapping("/post/{id}")
     @Operation(summary = "게시물 업데이트 (유저권한 필요)")
     public Long updatePost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto, @PathVariable Long id,
-                           @AuthenticationPrincipal UserDetails userDetails){
+                           HttpServletRequest request){
 
-        Long update = postService.update(id, requestPostWithSearchableDto, userDetails.getUsername());
+        Long update = postService.update(id, requestPostWithSearchableDto, request);
         return update;
     }
 
     // 자기 자신만 가능
     @DeleteMapping("/post/{id}")
     @Operation(summary = "게시물 삭제 (유저권한 필요)")
-    public void deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
-        postService.delete(id, userDetails.getUsername());
+    public void deletePost(@PathVariable Long id, HttpServletRequest request){
+        postService.delete(id, request);
     }
 
 }

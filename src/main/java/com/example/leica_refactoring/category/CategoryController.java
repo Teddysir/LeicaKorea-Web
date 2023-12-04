@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"https://localhost:3000","https://www.nts-microscope.com"})
+@CrossOrigin(origins = {"https://localhost:3000", "https://www.nts-microscope.com"})
 @Tag(name = "Category Controller", description = "Category API")
 public class CategoryController {
 
@@ -41,7 +41,7 @@ public class CategoryController {
     @Operation(summary = "부모 카테고리 밑에있는 하위 카테고리 조회")
     @GetMapping("/category/{parentCategory}") // 부모카테고리 밑에있는 하위카테고리 조회
     public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategory(
-            @PathVariable String parentCategory){
+            @PathVariable String parentCategory) {
         List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentCategory);
 
         return allChildCategory;
@@ -49,37 +49,30 @@ public class CategoryController {
 
     @Operation(summary = "부모 카테고리 생성 (유저권한 필요)")
     @PostMapping("/category/parent")
-    public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory,HttpServletRequest request) {
+    public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory, HttpServletRequest request) {
         return categoryService.createParentCategory(parentCategory, request);
 
-//        String token = memberService.extractTokenFromRequest(request);
-//        if (token != null && jwtTokenProvider.validateToken(token)) {
-//            String memberId = jwtTokenProvider.getMemberId(token);
-//            return categoryService.createParentCategory(parentCategory, memberId);
-//        } else {
-//            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
-        }
-//    }
+    }
 
     @Operation(summary = "자식 카테고리 생성 (유저권한 필요)")
     @PostMapping("/category/child")
-    public Long createChildCategory(@RequestBody RequestChildCategoryDto childCategory, @AuthenticationPrincipal UserDetails userDetails){
-        return categoryService.createChildCategory(childCategory, userDetails.getUsername());
+    public Long createChildCategory(@RequestBody RequestChildCategoryDto childCategory, HttpServletRequest request) {
+        return categoryService.createChildCategory(childCategory, request);
     }
 
     @Operation(summary = "부모, 자식 카테고리 수정 (유저권한 필요)")
     // 부모, 자식 카테고리 모두 같이 사용 가능
     @PutMapping("/category/{categoryId}")
-    public Long updateChildCategory(@RequestBody RequestUpdateChildCategoryDto dto, @PathVariable Long categoryId ,@AuthenticationPrincipal UserDetails userDetails){
-        Long update = categoryService.updateChildCategory(categoryId, dto, userDetails.getUsername());
+    public Long updateChildCategory(@RequestBody RequestUpdateChildCategoryDto dto, @PathVariable Long categoryId, HttpServletRequest request) {
+        Long update = categoryService.updateChildCategory(categoryId, dto, request);
         return update;
     }
 
     @Operation(summary = "부모 카테고리 삭제 (유저권한 필요)")
     @DeleteMapping("/category/{parentId}")
-    public ResponseEntity<String> deleteParentCategory(@PathVariable Long parentId, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<String> deleteParentCategory(@PathVariable Long parentId, HttpServletRequest request) {
         try {
-            categoryService.deleteParentCategory(parentId,userDetails.getUsername());
+            categoryService.deleteParentCategory(parentId, request);
             return ResponseEntity.ok("부모카테고리 삭제 성공");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 카테고리 입니다.");
@@ -91,9 +84,9 @@ public class CategoryController {
 
     @Operation(summary = "자식 카테고리 삭제 (유저권한 필요)")
     @DeleteMapping("/category/child/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId, @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId, HttpServletRequest request) {
         try {
-            categoryService.deleteCategory(categoryId, userDetails.getUsername());
+            categoryService.deleteCategory(categoryId, request);
             return ResponseEntity.ok("카테고리 삭제 성공");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 카테고리 입니다.");
