@@ -4,13 +4,16 @@ import com.example.leica_refactoring.dto.*;
 import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
-import com.example.leica_refactoring.member.MemberRepository;
+import com.example.leica_refactoring.jwt.MemberRepository;
+import com.example.leica_refactoring.jwt.MemberService;
+import com.example.leica_refactoring.jwt.UserRole;
 import com.example.leica_refactoring.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,6 +27,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
+    private final MemberService memberService;
 
     public List<ResponseParentCategoryDto> getParentCategories() {
         List<Category> parentCategories = categoryRepository.findByParentIsNull();
@@ -32,7 +36,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-        private ResponseParentCategoryDto mapToResponseDto(Category category) {
+    private ResponseParentCategoryDto mapToResponseDto(Category category) {
         return ResponseParentCategoryDto.builder()
                 .name(category.getName())
                 .id(category.getId())
@@ -58,12 +62,13 @@ public class CategoryService {
         return childCategoryDtos;
 
     }
-    public Long createParentCategory(RequestParentCategoryDto parentCategory, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
 
-        if(member == null) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
-        }else{
+    public Long createParentCategory(RequestParentCategoryDto parentCategory, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
+
+        if (member.getUserRole() != UserRole.ADMIN) {
+            throw new UsernameNotFoundException("유저 권한이 없습니다.");
+        } else {
             Long parentCategoryCount = categoryRepository.countByParentIsNull();
             Long maxParentCategoryCount = Long.valueOf(8);
 
@@ -74,9 +79,9 @@ public class CategoryService {
             String parentName = parentCategory.getParentName();
             Category category = categoryRepository.findByName(parentName);
 
-            if(category != null){
+            if (category != null) {
                 throw new CategoryAlreadyExistsException(parentName);
-            }else {
+            } else {
                 Category category1 = Category.builder()
                         .name(parentName)
                         .parent(null)
@@ -88,15 +93,16 @@ public class CategoryService {
         }
     }
 
-    public Long createChildCategory(RequestChildCategoryDto childCategory, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if(member == null) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
-        }else{
+    public Long createChildCategory(RequestChildCategoryDto childCategory, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
+
+        if (member.getUserRole() != UserRole.ADMIN) {
+            throw new UsernameNotFoundException("존재하는 사용자가 없습니다."); // 나중에 오류처리 모두 ErrorCode 코드 추가해서 적용해주기
+        } else {
             Category parentCategory = categoryRepository.findByName(childCategory.getParentName());
-            if(parentCategory == null){
+            if (parentCategory == null) {
                 throw new ParentCategoryNotFoundException(childCategory.getParentName());
-            }else{
+            } else {
                 String childName = childCategory.getChildName();
                 Category category = Category.builder()
                         .name(childName)
@@ -109,10 +115,10 @@ public class CategoryService {
         }
     }
 
-    public void deleteParentCategory(Long parentId, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
+    public void deleteParentCategory(Long parentId, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
 
-        if (member == null) {
+        if (member.getUserRole() != UserRole.ADMIN) {
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
         } else {
             Optional<Category> parentCategory = categoryRepository.findByIdAndParentIsNull(parentId);
@@ -132,28 +138,29 @@ public class CategoryService {
     }
 
 
-    public void deleteCategory(Long categoryId, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
+    public void deleteCategory(Long categoryId, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
 
-        if(member == null) {
+        if (member.getUserRole() != UserRole.ADMIN) {
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
-        }else{
+        } else {
             Optional<Category> category = categoryRepository.findById(categoryId);
             category.ifPresentOrElse(c -> categoryRepository.deleteById(categoryId),
-                    ()-> {
+                    () -> {
                         throw new NoSuchElementException("존재하지 않는 카테고리 입니다.");
                     });
         }
 
     }
 
-    public Long updateChildCategory(Long categoryId, RequestUpdateChildCategoryDto dto, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if(member == null) {
+    public Long updateChildCategory(Long categoryId, RequestUpdateChildCategoryDto dto, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
+
+        if (member.getUserRole() != UserRole.ADMIN) {
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
-        }else{
+        } else {
             Optional<Category> originCategory = categoryRepository.findById(categoryId);
-            if(!originCategory.isPresent()) {
+            if (!originCategory.isPresent()) {
                 throw new CategoryIsNotExists("존재하지 않는 카테고리입니다.");
             }
 

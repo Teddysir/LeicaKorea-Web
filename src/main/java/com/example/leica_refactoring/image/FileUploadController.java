@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -20,8 +21,8 @@ public class FileUploadController {
 
     @PostMapping("/upload")
     @Operation(summary = "이미지 업로드 (유저권한 필요)")
-    public String uploadFile(@RequestPart("file")MultipartFile[] files,@AuthenticationPrincipal UserDetails userDetails) throws IOException {
-        String key = s3FileUploadService.uploadFile(files[0], userDetails.getUsername());
+    public String uploadFile(@RequestPart("file")MultipartFile[] files, HttpServletRequest request) throws IOException {
+        String key = s3FileUploadService.uploadFile(files[0], request);
         return key; // key값 리턴해줄거임
 
         // postman으로 form-data 형식으로 key는 "file"로 해주고 이미지 파일 선택해서 post로 데이터 전송하면 key-"파일명.type" 형식으로 반환될거임

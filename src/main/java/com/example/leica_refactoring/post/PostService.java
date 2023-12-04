@@ -6,7 +6,9 @@ import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.entity.SearchPost;
-import com.example.leica_refactoring.member.MemberRepository;
+import com.example.leica_refactoring.jwt.MemberRepository;
+import com.example.leica_refactoring.jwt.MemberService;
+import com.example.leica_refactoring.jwt.UserRole;
 import com.example.leica_refactoring.search.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,16 +27,17 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final CategoryRepository categoryRepository;
     private final SearchRepository searchRepository;
 
 
     // 게시물 생성
-    public Long save(RequestPostWithSearchableDto requestPostDto, String memberId) {
-        Member member = memberRepository.findByMemberId(memberId);
-        if(member == null){
+    public Long save(RequestPostWithSearchableDto requestPostDto, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
+        if (member.getUserRole() != UserRole.ADMIN) {
             throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
-        }else{
+        } else {
             String content = requestPostDto.getSearchContent();
             RequestPostDto postDto = requestPostDto.getPost();
 
@@ -78,7 +82,7 @@ public class PostService {
                     .size(0L)
                     .childList(Collections.emptyList())
                     .build();
-        }else{
+        } else {
             int size = all.size();
 
             List<ResponsePostDto> collect = all.stream()
@@ -89,10 +93,10 @@ public class PostService {
             return ResponsePostListDto.builder()
                     .size((long) size)
                     .childList(collect)
-                    .build();}
+                    .build();
+        }
 
     }
-
 
 
     // 부모 카테고리안에 존재하는 모든 게시물 반환
@@ -125,13 +129,14 @@ public class PostService {
                 long totalPages = (long) Math.ceil((double) allPosts.size() / (double) pageSize);
                 boolean isLastPage = !pageable.isPaged() || currentPage >= totalPages - 1;
 
-                return getPaginationDto(totalPages, isLastPage, (long)allPosts.size(), postDtos);
+                return getPaginationDto(totalPages, isLastPage, (long) allPosts.size(), postDtos);
             } else {
                 return getPaginationDto(0L, true, 0L, Collections.emptyList());
 
             }
         }
     }
+
     // 자식 카테고리 안에있는 모든 게시물 반환
     public PaginationDto findAllPostByChildCategory(String parentName, String childName, Pageable pageable) {
         List<Category> childCategories = categoryRepository.findAllByName(childName);
@@ -182,11 +187,10 @@ public class PostService {
     }
 
 
-
-
     // 내용 업데이트
-    public Long update(Long id, RequestPostWithSearchableDto requestPostDto, String username) {
-        Member member = validateMemberAndPost(id, username);
+    public Long update(Long id, RequestPostWithSearchableDto requestPostDto, HttpServletRequest request) {
+        Member member = validateMemberAndPost(id, request);
+
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시물이 존재하지 않습니다."));
 
@@ -212,9 +216,8 @@ public class PostService {
     }
 
 
-
-    public void delete(Long id, String username) {
-        validateMemberAndPost(id, username);
+    public void delete(Long id, HttpServletRequest request) {
+        validateMemberAndPost(id, request);
         postRepository.deleteById(id);
 
     }
@@ -228,24 +231,24 @@ public class PostService {
     }
 
 
+    private Member validateMemberAndPost(Long id, HttpServletRequest request) {
+        Member member = memberService.findMemberByToken(request);
 
-    private Member validateMemberAndPost(Long id, String username) {
-        Member member = memberRepository.findByMemberId(username);
         Optional<Post> post = postRepository.findById(id);
-        if (member == null){
-            throw new UsernameNotFoundException("사용자가 존재하지 않습니다.");
-
+        if (member.getUserRole() != UserRole.ADMIN) {
+            throw new UsernameNotFoundException("Cannot Found User");
         }
-        if(!Objects.equals(post.get().getMember().getMemberId(), username)){
+
+        if (!Objects.equals(post.get().getMember().getMemberId(), member.getMemberId())) {
             throw new AuthorOnlyAccessException();
         }
         return member;
     }
 
 
-    private ResponsePostDto getBuild(Post post){
+    private ResponsePostDto getBuild(Post post) {
         if (post != null) {
-                SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
+            SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
             String content = byPostId.getSearchContent();
             content = content.replace("/", "");
             content = content.substring(0, Math.min(content.length(), 30));
@@ -282,6 +285,7 @@ public class PostService {
             return null;
         }
     }
+
     private static PaginationDto getPaginationDto(Long pageSize, boolean isLast, Long size, List childList) {
         return PaginationDto.builder()
                 .totalPage(pageSize)
@@ -290,7 +294,6 @@ public class PostService {
                 .childList(childList)
                 .build();
     }
-
 
 
 }
