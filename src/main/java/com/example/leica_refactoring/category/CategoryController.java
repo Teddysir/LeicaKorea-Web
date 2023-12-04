@@ -50,16 +50,16 @@ public class CategoryController {
     @Operation(summary = "부모 카테고리 생성 (유저권한 필요)")
     @PostMapping("/category/parent")
     public Long createParentCategory(@RequestBody RequestParentCategoryDto parentCategory,HttpServletRequest request) {
+        return categoryService.createParentCategory(parentCategory, request);
 
-        String token = memberService.extractTokenFromRequest(request);
-//        return categoryService.createParentCategory(parentCategory, request);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String memberId = jwtTokenProvider.getMemberId(token);
-            return categoryService.createParentCategory(parentCategory, memberId);
-        } else {
-            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+//        String token = memberService.extractTokenFromRequest(request);
+//        if (token != null && jwtTokenProvider.validateToken(token)) {
+//            String memberId = jwtTokenProvider.getMemberId(token);
+//            return categoryService.createParentCategory(parentCategory, memberId);
+//        } else {
+//            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
         }
-    }
+//    }
 
     @Operation(summary = "자식 카테고리 생성 (유저권한 필요)")
     @PostMapping("/category/child")
