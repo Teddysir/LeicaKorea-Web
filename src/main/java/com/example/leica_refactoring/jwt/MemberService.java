@@ -49,4 +49,14 @@ public class MemberService {
         return token == null ? null : memberRepository.findByMemberId(jwtTokenProvider.getMemberId(token));
     }
 
+    public void reissueToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
+
+        String newAccessToken = jwtTokenProvider.reissueAccessToken(refreshToken);
+        String newRefreshToken = jwtTokenProvider.reissueRefreshToken(refreshToken);
+
+        jwtTokenProvider.setHeaderAccessToken(response,newAccessToken);
+        jwtTokenProvider.setHeaderRefreshToken(response,newRefreshToken);
+    }
+
 }
