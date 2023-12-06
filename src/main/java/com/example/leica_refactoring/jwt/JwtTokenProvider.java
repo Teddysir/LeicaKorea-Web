@@ -89,15 +89,17 @@ public class JwtTokenProvider {
     }
 
     public String reissueAccessToken(String refreshToken) {
-        String memberId = redisService.getValues(refreshToken).get("memberId");
-        if (Objects.isNull(memberId)) {
-            throw new IllegalArgumentException(); // 나중에 오류코드로 수정
+        String memberId = redisService.getValues(refreshToken);
+
+        if (memberId == null) {
+            throw new IllegalArgumentException();
         }
+
         return createAccessToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
     }
 
     public String reissueRefreshToken(String refreshToken) {
-        String memberId = redisService.getValues(refreshToken).get("memberId");
+        String memberId = redisService.getValues(refreshToken);
         if (Objects.isNull(memberId)) {
             throw new IllegalArgumentException(); // 나중에 401 에러로 위에꺼랑 같이 수정
         }

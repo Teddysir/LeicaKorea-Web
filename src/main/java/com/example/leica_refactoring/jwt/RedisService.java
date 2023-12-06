@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,18 +17,27 @@ public class RedisService {
     private final RedisTemplate redisTemplate;
 
     public void setValues(String token, String memberId) {
-        ValueOperations<String, Object> operations = redisTemplate.opsForValue(); // opsForValue는 String 타입
-        Map<String, String> map = new HashMap<>();
-        map.put("memberId", memberId);
-        operations.set(token, map, Duration.ofDays(3)); // 3일 뒤 삭제
+        ValueOperations<String, String> operations = redisTemplate.opsForValue(); // opsForValue는 String 타입
+//        Map<String, String> map = new HashMap<>();
+//        map.put("memberId", memberId);
+        if (this.getValues(token)!=null) {
+            this.delValues(token);
+        }
+        operations.set(token, memberId, Duration.ofDays(3)); // 3일 뒤 삭제
     }
 
-    public Map<String, String> getValues(String token) {
-        ValueOperations<String, Object> operations = redisTemplate.opsForValue();
-        Object object = operations.get(token);
-        if (object != null && object instanceof Map) {
-            return (Map<String, String>) object;
+    public String getValues(String token) {
+        if (token == null) {
+            return null;
         }
+
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        String memberId = operations.get(token);
+
+        if (memberId !=null) {
+            return memberId;
+        }
+
         return null;
     }
 
