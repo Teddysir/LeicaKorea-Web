@@ -25,6 +25,8 @@ import java.util.*;
 public class JwtTokenProvider {
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final RedisService redisService;
+    private final MemberRepository memberRepository;
 
     @Value("${jwt.secret}")
     private String secretKey;
@@ -75,16 +77,41 @@ public class JwtTokenProvider {
     }
 
     public String resolveAccessToken(HttpServletRequest request) {
-        if(request.getHeader("authorization") != null )
+        if (request.getHeader("authorization") != null)
             return request.getHeader("authorization").substring(7);
         return null;
     }
 
     public String resolveRefreshToken(HttpServletRequest request) {
-        if(request.getHeader("refreshToken") != null )
+        if (request.getHeader("refreshToken") != null)
             return request.getHeader("refreshToken").substring(7);
         return null;
     }
+
+    public String reissueAccessToken(String refreshToken) {
+        String memberId = redisService.getValues(refreshToken);
+
+        if (memberId == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return createAccessToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
+    }
+
+    public String reissueRefreshToken(String refreshToken) {
+        String memberId = redisService.getValues(refreshToken);
+        if (Objects.isNull(memberId)) {
+            throw new IllegalArgumentException(); // 나중에 401 에러로 위에꺼랑 같이 수정
+        }
+
+        String newRefreshToken = createRefreshToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
+
+        redisService.delValues(refreshToken);
+        redisService.setValues(newRefreshToken, memberId);
+
+        return newRefreshToken;
+    }
+
 
     public boolean validateToken(String jwtToken) {
         try {
@@ -107,10 +134,10 @@ public class JwtTokenProvider {
     }
 
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        response.setHeader("authorization", "Bearer "+ accessToken);
+        response.setHeader("authorization", "Bearer " + accessToken);
     }
 
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-        response.setHeader("refreshToken", "Bearer "+ refreshToken);
+        response.setHeader("refreshToken", "Bearer " + refreshToken);
     }
 }

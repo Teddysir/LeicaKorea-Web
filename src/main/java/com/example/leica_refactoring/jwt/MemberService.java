@@ -17,6 +17,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
 
     public MemberLoginResponseDto login(MemberLoginRequestDto requestDto,HttpServletResponse response) {
 
@@ -27,7 +28,6 @@ public class MemberService {
         }
 
         this.setJwtTokenInHeader(requestDto.getMemberId(),response);
-
         return MemberLoginResponseDto.builder()
                 .responseCode("200")
                 .build();
@@ -41,12 +41,23 @@ public class MemberService {
 
         jwtTokenProvider.setHeaderAccessToken(response, accessToken);
         jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
+        redisService.setValues(refreshToken, memberId);
 
     }
 
     public Member findMemberByToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
         return token == null ? null : memberRepository.findByMemberId(jwtTokenProvider.getMemberId(token));
+    }
+
+    public void reissueToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
+
+        String newAccessToken = jwtTokenProvider.reissueAccessToken(refreshToken);
+        String newRefreshToken = jwtTokenProvider.reissueRefreshToken(refreshToken);
+
+        jwtTokenProvider.setHeaderAccessToken(response,newAccessToken);
+        jwtTokenProvider.setHeaderRefreshToken(response,newRefreshToken);
     }
 
 }

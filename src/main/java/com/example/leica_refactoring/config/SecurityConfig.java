@@ -45,8 +45,8 @@ public class SecurityConfig {
                     .and()
                     .authorizeRequests()
                     // 로그인, 검색, 견적서 요청 api는 모두 사용 가능
+                    .antMatchers(HttpMethod.GET,"/reissue").permitAll()
                     .antMatchers(HttpMethod.POST, "/login").permitAll()
-                    .antMatchers(HttpMethod.POST, "/signup").permitAll()
                     .antMatchers(HttpMethod.GET, "/search").permitAll()
                     .antMatchers(HttpMethod.POST, "/mail").hasAnyAuthority("USER")
                     // 게시물 조회는 모두 사용가능 이외는 모두 유저권한 요구
