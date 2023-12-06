@@ -36,7 +36,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi userApi() {
         Info info = new Info().title("이메일 전송, 검색 API").version("v0.1");
-        String[] paths = {"/mail","/search","/login","/signup"};
+        String[] paths = {"/mail","/search","/login","/signup","/reissue"};
 
         return GroupedOpenApi.builder()
                 .group("user")
