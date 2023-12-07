@@ -27,10 +27,6 @@ public class RedisService {
     }
 
     public String getValues(String token) {
-        if (token == null) {
-            return null;
-        }
-
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         String memberId = operations.get(token);
 
