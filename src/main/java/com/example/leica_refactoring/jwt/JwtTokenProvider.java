@@ -1,6 +1,10 @@
 package com.example.leica_refactoring.jwt;
 
 import com.example.leica_refactoring.enums.UserRole;
+import com.example.leica_refactoring.error.exception.AuthorOnlyAccessException;
+import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
+import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.service.jwt.CustomUserDetailsService;
 import com.example.leica_refactoring.service.jwt.RedisService;
@@ -95,7 +99,7 @@ public class JwtTokenProvider {
         String memberId = redisService.getValues(refreshToken);
 
         if (memberId == null) {
-            throw new IllegalArgumentException();
+            throw new ForbiddenException("401",ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
 
         return createAccessToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
@@ -104,7 +108,7 @@ public class JwtTokenProvider {
     public String reissueRefreshToken(String refreshToken) {
         String memberId = redisService.getValues(refreshToken);
         if (Objects.isNull(memberId)) {
-            throw new IllegalArgumentException(); // 나중에 401 에러로 위에꺼랑 같이 수정
+            throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION); // 나중에 401 에러로 위에꺼랑 같이 수정
         }
 
         String newRefreshToken = createRefreshToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());

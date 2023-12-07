@@ -5,6 +5,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.enums.UserRole;
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
+import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,7 +36,7 @@ public class S3FileUploadService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("유저가 존재하지 않습니다."); // 추후 ErrorCode 로직 수정
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             UUID uuid = UUID.randomUUID();
 
@@ -44,11 +47,10 @@ public class S3FileUploadService {
                 s3Client.putObject(bucketName, fileName, file.getInputStream(), getObjectMetadata(file));
                 return imageUrl;
             } catch (SdkClientException e) {
-                throw new IOException("S3에 파일 업로드를 실패하였습니다.", e);
+                throw new BadRequestException("파일 업로드에 실패했습니다.",ErrorCode.RUNTIME_EXCEPTION);
             }
         }
     }
-
 
     private ObjectMetadata getObjectMetadata(MultipartFile file) {
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -57,7 +59,4 @@ public class S3FileUploadService {
         return objectMetadata;
     }
 
-//    private String generateFileName(MultipartFile file){
-//        return file.getOriginalFilename();
-//    }
 }

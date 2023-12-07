@@ -20,7 +20,7 @@ public class MailService {
         try {
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
-            simpleMailMessage.setTo("smwfkim2@naver.com"); // 이거 고정이야 아버님메일
+            simpleMailMessage.setTo("smwfkim2@naver.com");
             simpleMailMessage.setSubject("[NTS] 견적 요청 메일입니다.");
             simpleMailMessage.setText(dto.getContent());
 

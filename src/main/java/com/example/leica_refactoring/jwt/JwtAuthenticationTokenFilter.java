@@ -26,10 +26,11 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
+        String path = request.getRequestURI();
 
         try {
             if (accessToken == null && refreshToken != null) {
-                if (jwtTokenProvider.validateToken(refreshToken)) {
+                if (jwtTokenProvider.validateToken(refreshToken) && path.contains("/reissue")) {
                     filterChain.doFilter(request, response);
                     return;
                 }

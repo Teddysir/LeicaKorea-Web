@@ -18,8 +18,6 @@ public class RedisService {
 
     public void setValues(String token, String memberId) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue(); // opsForValue는 String 타입
-//        Map<String, String> map = new HashMap<>();
-//        map.put("memberId", memberId);
         if (this.getValues(token) != null) {
             this.delValues(token);
         }

@@ -8,6 +8,8 @@ import com.example.leica_refactoring.error.exception.CategoryAlreadyExistsExcept
 import com.example.leica_refactoring.error.exception.CategoryIsNotExists;
 import com.example.leica_refactoring.error.exception.ParentCategoryMaxException;
 import com.example.leica_refactoring.error.exception.ParentCategoryNotFoundException;
+import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.CategoryRepository;
 import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.enums.UserRole;
@@ -29,7 +31,6 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final MemberService memberService;
 
@@ -71,7 +72,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("유저 권한이 없습니다.");
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Long parentCategoryCount = categoryRepository.countByParentIsNull();
             Long maxParentCategoryCount = Long.valueOf(8);
@@ -101,7 +102,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다."); // 나중에 오류처리 모두 ErrorCode 코드 추가해서 적용해주기
+            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION); // 나중에 오류처리 모두 ErrorCode 코드 추가해서 적용해주기
         } else {
             Category parentCategory = categoryRepository.findByName(childCategory.getParentName());
             if (parentCategory == null) {
@@ -123,7 +124,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Optional<Category> parentCategory = categoryRepository.findByIdAndParentIsNull(parentId);
 
@@ -146,7 +147,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Optional<Category> category = categoryRepository.findById(categoryId);
             category.ifPresentOrElse(c -> categoryRepository.deleteById(categoryId),
@@ -161,7 +162,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Optional<Category> originCategory = categoryRepository.findById(categoryId);
             if (!originCategory.isPresent()) {
