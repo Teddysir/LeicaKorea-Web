@@ -6,11 +6,15 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Getter @Setter
-@Builder @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SearchPost {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @OneToOne

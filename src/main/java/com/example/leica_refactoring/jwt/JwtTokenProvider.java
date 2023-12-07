@@ -1,11 +1,14 @@
 package com.example.leica_refactoring.jwt;
 
+import com.example.leica_refactoring.enums.UserRole;
+import com.example.leica_refactoring.repository.MemberRepository;
+import com.example.leica_refactoring.service.jwt.CustomUserDetailsService;
+import com.example.leica_refactoring.service.jwt.RedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;

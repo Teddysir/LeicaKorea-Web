@@ -1,7 +1,6 @@
 package com.example.leica_refactoring.entity;
 
 import lombok.*;
-import org.hibernate.annotations.Check;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -9,12 +8,16 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity @Setter
-@Builder @Getter
-@NoArgsConstructor @AllArgsConstructor
+@Entity
+@Setter
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
