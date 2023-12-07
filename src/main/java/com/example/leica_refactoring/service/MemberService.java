@@ -59,6 +59,11 @@ public class MemberService {
 
     public Member findMemberByToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
+
+        if(token != jwtTokenProvider.resolveRefreshToken(request)) {
+            throw new UnAuthorizedException("RefreshToken은 사용할 수 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
+        }
+
         return token == null ? null : memberRepository.findByMemberId(jwtTokenProvider.getMemberId(token));
     }
 

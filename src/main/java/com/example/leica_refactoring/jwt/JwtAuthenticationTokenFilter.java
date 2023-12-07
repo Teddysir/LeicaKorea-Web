@@ -1,7 +1,12 @@
 package com.example.leica_refactoring.jwt;
 
+import com.example.leica_refactoring.error.security.ErrorCode;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -13,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.security.SignatureException;
 
 @Slf4j
 @Component
@@ -27,12 +33,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
         String path = request.getRequestURI();
+        ErrorCode errorCode;
 
         try {
             if (accessToken == null && refreshToken != null) {
                 if (jwtTokenProvider.validateToken(refreshToken) && path.contains("/reissue")) {
                     filterChain.doFilter(request, response);
-                    return;
                 }
             } else if (accessToken == null && refreshToken == null) {
                 filterChain.doFilter(request, response);
@@ -42,7 +48,25 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                     this.setAuthentication(accessToken);
                 }
             }
+        } catch (MalformedJwtException e) {
+            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            setResponse(response, errorCode);
+            return;
+        } catch (ExpiredJwtException e) {
+            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            setResponse(response, errorCode);
+            return;
+        } catch (UnsupportedJwtException e) {
+            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            setResponse(response, errorCode);
+            return;
         } catch (IllegalArgumentException e) {
+            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            setResponse(response, errorCode);
+            return;
+        } catch (RuntimeException e) {
+            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            setResponse(response, errorCode);
             return;
         }
 
@@ -52,5 +76,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private void setAuthentication(String token) {
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        json.put("code", errorCode.getCode());
+        json.put("message", errorCode.getMessage());
+
+        response.getWriter().print(json);
+        response.getWriter().flush();
+
     }
 }
