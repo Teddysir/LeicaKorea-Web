@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private long accessTokenValidTime = 60 * 60 * 1000L; // 1h
+    private long accessTokenValidTime = 60 * 1000L; // 1h
     private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L; // 7d
 
     @PostConstruct
