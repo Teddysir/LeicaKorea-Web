@@ -1,16 +1,16 @@
 package com.example.leica_refactoring.entity;
 
-import com.example.leica_refactoring.jwt.UserRole;
+import com.example.leica_refactoring.enums.UserRole;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 
 /**
- *  1. admin
- *  2. user
- *
- *  memberId, pw, userName, role,
+ * 1. admin
+ * 2. user
+ * <p>
+ * memberId, pw, userName, role,
  */
 
 @Entity
@@ -20,7 +20,8 @@ import javax.persistence.*;
 @Builder
 public class Member {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "m_id")
     private Long id;
 

@@ -7,12 +7,15 @@ import org.hibernate.annotations.OnDeleteAction;
 import javax.persistence.*;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @Builder
-@NoArgsConstructor @AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class Post extends PostTime {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Long id;
 

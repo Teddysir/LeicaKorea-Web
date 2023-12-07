@@ -2,7 +2,6 @@ package com.example.leica_refactoring.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
