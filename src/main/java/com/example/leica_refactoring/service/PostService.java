@@ -1,5 +1,7 @@
 package com.example.leica_refactoring.service;
 
+import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.CategoryRepository;
 import com.example.leica_refactoring.dto.post.*;
 import com.example.leica_refactoring.dto.search.RequestPostWithSearchableDto;
@@ -38,7 +40,7 @@ public class PostService {
     public Long save(RequestPostWithSearchableDto requestPostDto, HttpServletRequest request) {
         Member member = memberService.findMemberByToken(request);
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("존재하는 사용자가 없습니다.");
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             String content = requestPostDto.getSearchContent();
             RequestPostDto postDto = requestPostDto.getPost();
@@ -143,7 +145,6 @@ public class PostService {
     public PaginationDto findAllPostByChildCategory(String parentName, String childName, Pageable pageable) {
         List<Category> childCategories = categoryRepository.findAllByName(childName);
 
-
         Category selectedChildCategory = null;
         for (Category category : childCategories) {
             if (category.getParent().getName().equals(parentName)) {
@@ -224,7 +225,6 @@ public class PostService {
 
     }
 
-
     public ResponsePostOneDto showPost(Long id) {
         Optional<Post> postOptional = postRepository.findById(id);
         Post post = postOptional.orElseThrow(() -> new NoSuchElementException("게시물이 존재하지 않습니다."));
@@ -232,13 +232,12 @@ public class PostService {
         return getOneBuild(post);
     }
 
-
     private Member validateMemberAndPost(Long id, HttpServletRequest request) {
         Member member = memberService.findMemberByToken(request);
 
         Optional<Post> post = postRepository.findById(id);
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UsernameNotFoundException("Cannot Found User");
+            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
 
         if (!Objects.equals(post.get().getMember().getMemberId(), member.getMemberId())) {
@@ -246,7 +245,6 @@ public class PostService {
         }
         return member;
     }
-
 
     private ResponsePostDto getBuild(Post post) {
         if (post != null) {
@@ -296,6 +294,5 @@ public class PostService {
                 .childList(childList)
                 .build();
     }
-
 
 }

@@ -3,6 +3,8 @@ package com.example.leica_refactoring.service;
 import com.example.leica_refactoring.dto.member.MemberLoginRequestDto;
 import com.example.leica_refactoring.dto.member.MemberLoginResponseDto;
 import com.example.leica_refactoring.entity.Member;
+import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.jwt.JwtTokenProvider;
 import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.service.jwt.RedisService;
@@ -27,10 +29,14 @@ public class MemberService {
 
     public MemberLoginResponseDto login(MemberLoginRequestDto requestDto, HttpServletResponse response) {
 
+        if(!memberRepository.existsByMemberId(requestDto.getMemberId())) {
+            throw new UnAuthorizedException("401", ErrorCode.ACCESS_DENIED_EXCEPTION); // 유저를 찾을 수 없을때
+        }
+
         Member member = memberRepository.findByMemberId(requestDto.getMemberId());
 
         if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
-            throw new IllegalArgumentException();
+            throw new UnAuthorizedException("401", ErrorCode.ACCESS_DENIED_EXCEPTION); // 비밀번호를 틀렸을때
         }
 
         this.setJwtTokenInHeader(requestDto.getMemberId(), response);
@@ -53,6 +59,11 @@ public class MemberService {
 
     public Member findMemberByToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
+
+        if(token != jwtTokenProvider.resolveRefreshToken(request)) {
+            throw new UnAuthorizedException("RefreshToken은 사용할 수 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
+        }
+
         return token == null ? null : memberRepository.findByMemberId(jwtTokenProvider.getMemberId(token));
     }
 

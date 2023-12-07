@@ -4,6 +4,8 @@ import com.example.leica_refactoring.dto.search.PaginationSearchDto;
 import com.example.leica_refactoring.dto.search.ResponseSearchPostDto;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.entity.SearchPost;
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.PostRepository;
 import com.example.leica_refactoring.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,15 @@ import java.util.stream.Collectors;
 public class SearchService {
 
     private final SearchRepository searchRepository;
-    private final PostRepository postRepository;
 
     @Transactional
     public PaginationSearchDto searchPost(String keyword, Pageable pageable) {
 
         Page<SearchPost> searchPostPage = searchRepository.findBySearchContentContainingOrPostTitleContaining(keyword, keyword, pageable);
+
+        if (searchPostPage == null) {
+            throw new BadRequestException("잘못된 요청입니다.", ErrorCode.RUNTIME_EXCEPTION);
+        }
 
         List<ResponseSearchPostDto> collect = searchPostPage.stream().map(searchPost -> {
             String content = searchPost.getSearchContent();
