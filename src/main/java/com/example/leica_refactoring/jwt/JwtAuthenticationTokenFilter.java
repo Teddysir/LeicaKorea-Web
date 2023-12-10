@@ -1,6 +1,7 @@
 package com.example.leica_refactoring.jwt;
 
 import com.example.leica_refactoring.error.security.ErrorCode;
+import com.example.leica_refactoring.error.security.ErrorJwtCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.security.SignatureException;
 
 @Slf4j
 @Component
@@ -33,7 +33,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String accessToken = jwtTokenProvider.resolveAccessToken(request);
         String refreshToken = jwtTokenProvider.resolveRefreshToken(request);
         String path = request.getRequestURI();
-        ErrorCode errorCode;
+        ErrorJwtCode errorCode;
 
         try {
             if (accessToken == null && refreshToken != null) {
@@ -49,23 +49,23 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 }
             }
         } catch (MalformedJwtException e) {
-            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            errorCode = ErrorJwtCode.INVALID_JWT_FORMAT;
             setResponse(response, errorCode);
             return;
         } catch (ExpiredJwtException e) {
-            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            errorCode = ErrorJwtCode.EXPIRED_JWT_TOKEN;
             setResponse(response, errorCode);
             return;
         } catch (UnsupportedJwtException e) {
-            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            errorCode = ErrorJwtCode.UNSUPPORTED_JWT_TOKEN;
             setResponse(response, errorCode);
             return;
         } catch (IllegalArgumentException e) {
-            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            errorCode = ErrorJwtCode.INVALID_VALUE;
             setResponse(response, errorCode);
             return;
         } catch (RuntimeException e) {
-            errorCode = ErrorCode.ACCESS_DENIED_EXCEPTION;
+            errorCode = ErrorJwtCode.RUNTIME_EXCEPTION;
             setResponse(response, errorCode);
             return;
         }
@@ -78,7 +78,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException{
+    private void setResponse(HttpServletResponse response, ErrorJwtCode errorCode) throws IOException {
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

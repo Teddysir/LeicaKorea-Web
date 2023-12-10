@@ -16,7 +16,6 @@ import com.example.leica_refactoring.enums.UserRole;
 import com.example.leica_refactoring.repository.SearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
