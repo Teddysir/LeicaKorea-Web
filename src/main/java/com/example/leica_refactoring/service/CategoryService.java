@@ -102,20 +102,25 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION); // 나중에 오류처리 모두 ErrorCode 코드 추가해서 적용해주기
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION); // 나중에 오류처리 모두 ErrorCode 코드 추가해서 적용해주기
         } else {
             Category parentCategory = categoryRepository.findByName(childCategory.getParentName());
             if (parentCategory == null) {
                 throw new ParentCategoryNotFoundException(childCategory.getParentName());
             } else {
                 String childName = childCategory.getChildName();
-                Category category = Category.builder()
-                        .name(childName)
-                        .parent(parentCategory)
-                        .build();
+                Category category = categoryRepository.findByName(childName);
+                if (category != null) {
+                    throw new CategoryAlreadyExistsException(childName);
+                } else {
+                    Category category1 = Category.builder()
+                            .name(childName)
+                            .parent(parentCategory)
+                            .build();
 
-                Category save = categoryRepository.save(category);
-                return save.getId();
+                    Category save = categoryRepository.save(category1);
+                    return save.getId();
+                }
             }
         }
     }
@@ -124,7 +129,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Optional<Category> parentCategory = categoryRepository.findByIdAndParentIsNull(parentId);
 
@@ -147,7 +152,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Optional<Category> category = categoryRepository.findById(categoryId);
             category.ifPresentOrElse(c -> categoryRepository.deleteById(categoryId),
@@ -162,7 +167,7 @@ public class CategoryService {
         Member member = memberService.findMemberByToken(request);
 
         if (member.getUserRole() != UserRole.ADMIN) {
-            throw new UnAuthorizedException("유저 권한이 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
+            throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             Optional<Category> originCategory = categoryRepository.findById(categoryId);
             if (!originCategory.isPresent()) {
