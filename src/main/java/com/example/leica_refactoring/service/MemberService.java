@@ -60,7 +60,9 @@ public class MemberService {
     public Member findMemberByToken(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveAccessToken(request);
 
-        if(token != jwtTokenProvider.resolveRefreshToken(request)) {
+        String accessTokenType = jwtTokenProvider.extractTokenType(token);
+
+        if("refresh".equals(accessTokenType)) {
             throw new UnAuthorizedException("RefreshToken은 사용할 수 없습니다.",ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
 
