@@ -30,8 +30,7 @@ public class Category {
     @OneToMany(mappedBy = "parent")
     private final List<Category> child = new ArrayList<>();
 
-    @OnDelete(action = OnDeleteAction.CASCADE) // 자식 카테고리 삭제시 포함된 게시물 모두 삭제
-    @OneToMany(mappedBy = "childCategory")
+    @OneToMany(mappedBy = "childCategory",cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Post> posts = new ArrayList<>();
 
 
