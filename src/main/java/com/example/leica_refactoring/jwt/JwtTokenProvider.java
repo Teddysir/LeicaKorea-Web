@@ -1,9 +1,7 @@
 package com.example.leica_refactoring.jwt;
 
 import com.example.leica_refactoring.enums.UserRole;
-import com.example.leica_refactoring.error.exception.AuthorOnlyAccessException;
 import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
-import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.service.jwt.CustomUserDetailsService;
@@ -47,17 +45,18 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(String memberId, UserRole userRole) {
-        return this.createToken(memberId, userRole, accessTokenValidTime);
+        return this.createToken(memberId, userRole, accessTokenValidTime,"access");
     }
 
     public String createRefreshToken(String memberId, UserRole userRole) {
-        return this.createToken(memberId, userRole, refreshTokenValidTime);
+        return this.createToken(memberId, userRole, refreshTokenValidTime,"refresh");
     }
 
     // 토큰 생성 로직
-    public String createToken(String memberId, UserRole userRole, long tokenValid) {
+    public String createToken(String memberId, UserRole userRole, long tokenValid, String tokenType) {
         Claims claims = Jwts.claims().setSubject(memberId);
         claims.put("roles", userRole.toString()); // key - value 형태로 저장하는거임 claims는 jwt에 들어가는 정보를 key-value 형식으로 저장함 memberId가 주체임
+        claims.put("type", tokenType);
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
         Date date = new Date();
@@ -108,7 +107,7 @@ public class JwtTokenProvider {
     public String reissueRefreshToken(String refreshToken) {
         String memberId = redisService.getValues(refreshToken);
         if (Objects.isNull(memberId)) {
-            throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION); // 나중에 401 에러로 위에꺼랑 같이 수정
+            throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
 
         String newRefreshToken = createRefreshToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
@@ -146,5 +145,25 @@ public class JwtTokenProvider {
 
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
         response.setHeader("refreshToken", "Bearer " + refreshToken);
+    }
+
+    public String extractTokenType(String token) {
+        Claims claims = extractClaims(token);
+        if(claims != null && claims.containsKey("type")){
+            return (String) claims.get("type");
+        }
+        throw new UnsupportedJwtException("JWT token don't have Type");
+    }
+
+    private Claims extractClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey.getBytes())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (IllegalArgumentException e) {
+            throw new UnsupportedJwtException("Can't extract token Type");
+        }
     }
 }
