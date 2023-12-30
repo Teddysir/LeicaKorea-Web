@@ -5,17 +5,22 @@ import com.example.leica_refactoring.dto.member.MemberLoginResponseDto;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
+import com.example.leica_refactoring.error.security.ErrorJwtCode;
+import com.example.leica_refactoring.jwt.JwtAuthenticationTokenFilter;
 import com.example.leica_refactoring.jwt.JwtTokenProvider;
 import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.service.jwt.RedisService;
 import com.example.leica_refactoring.enums.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Service
 @Transactional
@@ -26,6 +31,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final RedisService redisService;
+    private final JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     public MemberLoginResponseDto login(MemberLoginRequestDto requestDto, HttpServletResponse response) {
 
@@ -77,6 +83,30 @@ public class MemberService {
 
         jwtTokenProvider.setHeaderAccessToken(response, newAccessToken);
         jwtTokenProvider.setHeaderRefreshToken(response, newRefreshToken);
+    }
+
+
+    public String returnRoleService(HttpServletRequest request) { // 유저 정보 반환 메서드
+        String token = jwtTokenProvider.resolveAccessToken(request);
+        String tokenRole = jwtTokenProvider.extractTokenRole(token);
+
+        if(tokenRole.equals(UserRole.ADMIN.getKey())){
+            return UserRole.ADMIN.getKey();
+        }
+        return UserRole.USER.getKey();
+    }
+
+    public boolean checkAccessTokenExpired(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveAccessToken(request);
+
+        if(jwtTokenProvider.validateToken(token)){
+            return true;
+        } else if(!jwtTokenProvider.validateToken(token)){
+            return false;
+        } else {
+            return false;
+        }
+
     }
 
 }

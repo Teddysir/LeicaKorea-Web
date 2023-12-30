@@ -36,16 +36,31 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         ErrorJwtCode errorCode;
 
         try {
-            if (accessToken == null && refreshToken != null) {
+            if (accessToken == null && refreshToken != null) { // accessToken이 없고 refreshToken 만 유효할때
+                if (!jwtTokenProvider.validateToken(refreshToken) && path.contains("/reissue")) { // refreshToken이 유효하지않으면
+                    errorCode = ErrorJwtCode.EXPIRED_REFRESH_TOKEN;
+                    setResponse(response, errorCode);
+                    return;
+                }
                 if (jwtTokenProvider.validateToken(refreshToken) && path.contains("/reissue")) {
                     filterChain.doFilter(request, response);
                 }
-            } else if (accessToken == null && refreshToken == null) {
+            } else if (accessToken == null && refreshToken == null) { // accessToken, RefreshToken 둘다 없을때
                 filterChain.doFilter(request, response);
                 return;
             } else {
-                if (jwtTokenProvider.validateToken(accessToken)) {
+                try {
+                    jwtTokenProvider.validateToken(accessToken); // accessToken 유효성 검사해 true면 쓰는데 false면 catch로 넘어가
                     this.setAuthentication(accessToken);
+                } catch (ExpiredJwtException e) {
+                    if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) { // 만약 rt가 null이 아니고 유효하면
+                        accessToken = jwtTokenProvider.reissueAccessToken(refreshToken); // 유효성 검사해서 at 재발급
+                        this.setAuthentication(accessToken);
+                        filterChain.doFilter(request, response);
+                    } else { // 아니면 그냥 at 만료
+                        setResponse(response, ErrorJwtCode.EXPIRED_ACCESS_TOKEN);
+                    }
+                    return;
                 }
             }
         } catch (MalformedJwtException e) {
@@ -53,8 +68,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             setResponse(response, errorCode);
             return;
         } catch (ExpiredJwtException e) {
-            errorCode = ErrorJwtCode.EXPIRED_JWT_TOKEN;
-            setResponse(response, errorCode);
+            String tokenType = jwtTokenProvider.extractTokenType(accessToken);
+            if ("access".equals(tokenType)) {
+                setResponse(response, ErrorJwtCode.EXPIRED_ACCESS_TOKEN);
+            } else {
+                setResponse(response, ErrorJwtCode.EXPIRED_REFRESH_TOKEN);
+            }
             return;
         } catch (UnsupportedJwtException e) {
             errorCode = ErrorJwtCode.UNSUPPORTED_JWT_TOKEN;

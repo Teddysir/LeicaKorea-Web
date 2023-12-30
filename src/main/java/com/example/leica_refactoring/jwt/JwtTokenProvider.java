@@ -36,8 +36,9 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private long accessTokenValidTime = 60 * 1000L; // 1h
-    private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L; // 7d
+    private long accessTokenValidTime = 30 * 1000L; // 1h
+    //    private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L; // 7d
+    private long refreshTokenValidTime = 60 * 1000L;
 
     @PostConstruct
     public void init() {
@@ -45,11 +46,11 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(String memberId, UserRole userRole) {
-        return this.createToken(memberId, userRole, accessTokenValidTime,"access");
+        return this.createToken(memberId, userRole, accessTokenValidTime, "access");
     }
 
     public String createRefreshToken(String memberId, UserRole userRole) {
-        return this.createToken(memberId, userRole, refreshTokenValidTime,"refresh");
+        return this.createToken(memberId, userRole, refreshTokenValidTime, "refresh");
     }
 
     // 토큰 생성 로직
@@ -98,7 +99,7 @@ public class JwtTokenProvider {
         String memberId = redisService.getValues(refreshToken);
 
         if (memberId == null) {
-            throw new ForbiddenException("401",ErrorCode.ACCESS_DENIED_EXCEPTION);
+            throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
 
         return createAccessToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
@@ -131,7 +132,7 @@ public class JwtTokenProvider {
         } catch (MalformedJwtException e) {
             throw new MalformedJwtException("Invalid JWT token");
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(null, null, "Token has expired");
+            throw new ExpiredJwtException(null,null, "Expired JWT TOKEN");
         } catch (UnsupportedJwtException ex) {
             throw new UnsupportedJwtException("JWT token is unsupported");
         } catch (IllegalArgumentException e) {
@@ -149,10 +150,18 @@ public class JwtTokenProvider {
 
     public String extractTokenType(String token) {
         Claims claims = extractClaims(token);
-        if(claims != null && claims.containsKey("type")){
+        if (claims != null && claims.containsKey("type")) {
             return (String) claims.get("type");
         }
         throw new UnsupportedJwtException("JWT token don't have Type");
+    }
+
+    public String extractTokenRole(String token) {
+        Claims claims =extractClaims(token);
+        if(claims!= null && claims.containsKey("roles")) {
+            return (String) claims.get("roles");
+        }
+        throw new UnsupportedJwtException("JWT token don't have Roles");
     }
 
     private Claims extractClaims(String token) {
