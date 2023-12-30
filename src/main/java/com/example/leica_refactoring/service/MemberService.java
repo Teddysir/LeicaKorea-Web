@@ -92,8 +92,12 @@ public class MemberService {
 
         if(tokenRole.equals(UserRole.ADMIN.getKey())){
             return UserRole.ADMIN.getKey();
+        } else if(tokenRole.equals(UserRole.USER.getKey())){
+            return UserRole.USER.getKey();
+        } else {
+            return "User permission does not exist.";
         }
-        return UserRole.USER.getKey();
+
     }
 
     public boolean checkAccessTokenExpired(HttpServletRequest request) {
