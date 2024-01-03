@@ -2,6 +2,7 @@ package com.example.leica_refactoring.error.security;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @ToString

@@ -59,7 +59,7 @@ public class MemberService {
 
         jwtTokenProvider.setHeaderAccessToken(response, accessToken);
         jwtTokenProvider.setHeaderRefreshToken(response, refreshToken);
-        redisService.setValues(refreshToken, memberId);
+        redisService.setValues(memberId, refreshToken);
 
     }
 

@@ -107,6 +107,7 @@ public class JwtTokenProvider {
 
     public String reissueRefreshToken(String refreshToken) {
         String memberId = redisService.getValues(refreshToken);
+
         if (Objects.isNull(memberId)) {
             throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
         }
@@ -114,7 +115,7 @@ public class JwtTokenProvider {
         String newRefreshToken = createRefreshToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
 
         redisService.delValues(refreshToken);
-        redisService.setValues(newRefreshToken, memberId);
+        redisService.setValues(memberId, newRefreshToken);
 
         return newRefreshToken;
     }
@@ -132,7 +133,7 @@ public class JwtTokenProvider {
         } catch (MalformedJwtException e) {
             throw new MalformedJwtException("Invalid JWT token");
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(null,null, "Expired JWT TOKEN");
+            throw new ExpiredJwtException(null, null, "JWT token is Expired");
         } catch (UnsupportedJwtException ex) {
             throw new UnsupportedJwtException("JWT token is unsupported");
         } catch (IllegalArgumentException e) {
@@ -152,13 +153,14 @@ public class JwtTokenProvider {
         Claims claims = extractClaims(token);
         if (claims != null && claims.containsKey("type")) {
             return (String) claims.get("type");
+        } else {
+            throw new UnsupportedJwtException("JWT token don't have Type");
         }
-        throw new UnsupportedJwtException("JWT token don't have Type");
     }
 
     public String extractTokenRole(String token) {
-        Claims claims =extractClaims(token);
-        if(claims!= null && claims.containsKey("roles")) {
+        Claims claims = extractClaims(token);
+        if (claims != null && claims.containsKey("roles")) {
             return (String) claims.get("roles");
         }
         throw new UnsupportedJwtException("JWT token don't have Roles");
@@ -169,7 +171,7 @@ public class JwtTokenProvider {
             return Jwts.parserBuilder()
                     .setSigningKey(secretKey.getBytes())
                     .build()
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(token) // 이 메서드에서 토큰이 만료된걸 추출해야하는데 만료된 토큰의 claims를 추출하려니 오류가 나타나네
                     .getBody();
         } catch (IllegalArgumentException e) {
             throw new UnsupportedJwtException("Can't extract token Type");
