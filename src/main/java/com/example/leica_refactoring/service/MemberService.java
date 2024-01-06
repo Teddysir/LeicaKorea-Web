@@ -3,6 +3,7 @@ package com.example.leica_refactoring.service;
 import com.example.leica_refactoring.dto.member.MemberLoginRequestDto;
 import com.example.leica_refactoring.dto.member.MemberLoginResponseDto;
 import com.example.leica_refactoring.entity.Member;
+import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.error.security.ErrorJwtCode;
@@ -88,6 +89,11 @@ public class MemberService {
 
     public String returnRoleService(HttpServletRequest request) { // 유저 정보 반환 메서드
         String token = jwtTokenProvider.resolveAccessToken(request);
+
+        if(token == null || !checkAccessTokenExpired(request)){
+                throw new UnAuthorizedException("1005",ErrorCode.EXPIRED_ACCESS_TOKEN);
+        }
+
         String tokenRole = jwtTokenProvider.extractTokenRole(token);
 
         if(tokenRole.equals(UserRole.ADMIN.getKey())){
@@ -95,7 +101,7 @@ public class MemberService {
         } else if(tokenRole.equals(UserRole.USER.getKey())){
             return UserRole.USER.getKey();
         } else {
-            return "User permission does not exist.";
+            throw new ForbiddenException("401",ErrorCode.FORBIDDEN_EXCEPTION);
         }
 
     }

@@ -1,6 +1,5 @@
 package com.example.leica_refactoring.jwt;
 
-import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.error.security.ErrorJwtCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

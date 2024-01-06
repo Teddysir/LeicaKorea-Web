@@ -1,5 +1,6 @@
 package com.example.leica_refactoring.service;
 
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.CategoryRepository;
@@ -188,7 +189,6 @@ public class PostService {
         }
     }
 
-
     // 내용 업데이트
     public Long update(Long id, RequestPostWithSearchableDto requestPostDto, HttpServletRequest request) {
         Member member = validateMemberAndPost(id, request);
@@ -201,6 +201,16 @@ public class PostService {
 
         SearchPost searchPost = searchRepository.findByPost_Id(id);
 
+        String newParentCategory = requestPostDto.getCategory().getParentName();
+        String newChildCategory = requestPostDto.getCategory().getChildName();
+
+        Category newParentCategory1 = categoryRepository.findByName(newParentCategory);
+        Category newChildCategory1 = categoryRepository.findByName(newChildCategory);
+
+        if(newParentCategory1 == null || newChildCategory1 == null) {
+            throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
+        }
+
         searchPost.setSearchContent(content);
 
         // 게시물 내용 업데이트
@@ -209,6 +219,8 @@ public class PostService {
         originPost.setContent(post.getContent());
         originPost.setThumbnail(post.getThumbnail());
         originPost.setMember(member);
+        originPost.getChildCategory().setParent(newParentCategory1);
+        originPost.setChildCategory(newChildCategory1); // 이걸로 초기화를 하는거지
 
         // 업데이트된 게시물 저장
         Post updatedPost = postRepository.save(originPost);
