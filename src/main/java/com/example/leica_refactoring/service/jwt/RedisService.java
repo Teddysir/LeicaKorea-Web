@@ -1,5 +1,7 @@
 package com.example.leica_refactoring.service.jwt;
 
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
+import com.example.leica_refactoring.error.security.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,15 +26,19 @@ public class RedisService {
     }
 
     public String getValues(String token) {
-        ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        String memberId = operations.get(token);
 
-        log.info(memberId);
-        System.out.println(memberId);
+        try {
+            ValueOperations<String, String> operations = redisTemplate.opsForValue();
+            String memberId = operations.get(token);
 
-        if (memberId != null) {
-            return memberId;
+            if (memberId != null) {
+                return memberId;
+            }
+
+        } catch (NullPointerException e) {
+            throw new BadRequestException("400", ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
+
         return null;
     }
 
