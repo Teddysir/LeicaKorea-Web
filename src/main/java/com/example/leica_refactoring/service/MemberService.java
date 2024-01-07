@@ -3,6 +3,7 @@ package com.example.leica_refactoring.service;
 import com.example.leica_refactoring.dto.member.MemberLoginRequestDto;
 import com.example.leica_refactoring.dto.member.MemberLoginResponseDto;
 import com.example.leica_refactoring.entity.Member;
+import com.example.leica_refactoring.error.exception.requestError.ExpiredAccessTokenException;
 import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
@@ -90,7 +91,7 @@ public class MemberService {
         String token = jwtTokenProvider.resolveAccessToken(request);
 
         if (token == null || !checkAccessTokenExpired(request)) {
-            throw new UnAuthorizedException("1007", ErrorCode.EXPIRED_ACCESS_TOKEN);
+            throw new ExpiredAccessTokenException("1007",ErrorCode.EXPIRED_ACCESS_TOKEN);
         }
 
         String tokenRole = jwtTokenProvider.extractTokenRole(token);
