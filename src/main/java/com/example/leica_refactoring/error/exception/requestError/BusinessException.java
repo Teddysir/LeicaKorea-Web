@@ -4,7 +4,7 @@ import com.example.leica_refactoring.error.security.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class BusinessException extends RuntimeException {
+public class BusinessException extends RuntimeException{
 
     private final ErrorCode errorCode;
 

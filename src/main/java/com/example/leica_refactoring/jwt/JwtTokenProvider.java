@@ -1,6 +1,8 @@
 package com.example.leica_refactoring.jwt;
 
 import com.example.leica_refactoring.enums.UserRole;
+import com.example.leica_refactoring.error.exception.requestError.ExpiredAccessTokenException;
+import com.example.leica_refactoring.error.exception.requestError.ExpiredRefreshTokenException;
 import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.MemberRepository;
@@ -9,8 +11,8 @@ import com.example.leica_refactoring.service.jwt.RedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,6 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.*;
 
-@Slf4j
 @Component
 @Transactional
 @RequiredArgsConstructor
@@ -36,9 +37,9 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private long accessTokenValidTime = 30 * 30 * 1000L; // 1h
+    private long accessTokenValidTime = 30 * 1000L;
     //    private long refreshTokenValidTime = 7 * 24 * 60 * 60 * 1000L; // 7d
-    private long refreshTokenValidTime = 60 * 60 * 1000L;
+    private long refreshTokenValidTime = 60 * 1000L;
 
     @PostConstruct
     public void init() {
@@ -95,33 +96,57 @@ public class JwtTokenProvider {
         return null;
     }
 
-    public String reissueAccessToken(String refreshToken) {
-        String memberId = redisService.getValues(refreshToken);
-
-        if (memberId == null) {
-            throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
+    public String reissueAccessToken(String refreshToken, HttpServletResponse response) {
+        try {
+            String memberId = redisService.getValues(refreshToken);
+            return createAccessToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return ErrorCode.EXPIRED_ACCESS_TOKEN.getMessage();
         }
 
-        return createAccessToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
+
     }
 
-    public String reissueRefreshToken(String refreshToken) {
-        String memberId = redisService.getValues(refreshToken);
+    public String reissueRefreshToken(String refreshToken, HttpServletResponse response) {
+        try {
+            String memberId = redisService.getValues(refreshToken);
 
-        if (Objects.isNull(memberId)) {
-            throw new ForbiddenException("401", ErrorCode.ACCESS_DENIED_EXCEPTION);
+            String newRefreshToken = createRefreshToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
+
+            redisService.delValues(refreshToken);
+            redisService.setValues(memberId, newRefreshToken);
+
+            return newRefreshToken;
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return ErrorCode.EXPIRED_REFRESH_TOKEN.getMessage();
         }
 
-        String newRefreshToken = createRefreshToken(memberId, memberRepository.findByMemberId(memberId).getUserRole());
+    }
 
-        redisService.delValues(refreshToken);
-        redisService.setValues(memberId, newRefreshToken);
+    public boolean validateRefreshToken(String refreshToken) {
+        try {
+            Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(refreshToken);
 
-        return newRefreshToken;
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (MalformedJwtException e) {
+            throw new MalformedJwtException("Invalid JWT token");
+        } catch (ExpiredJwtException e) {
+            throw new ExpiredRefreshTokenException("1006", ErrorCode.EXPIRED_REFRESH_TOKEN); // 이부분에 걸리네
+        } catch (UnsupportedJwtException ex) {
+            throw new UnsupportedJwtException("JWT token is unsupported");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("JWT claims string is empty");
+        }
     }
 
 
-    public boolean validateToken(String jwtToken) {
+    public boolean validateAccessToken(String jwtToken) {
         try {
             Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
             Jws<Claims> claims = Jwts.parserBuilder()
@@ -133,7 +158,7 @@ public class JwtTokenProvider {
         } catch (MalformedJwtException e) {
             throw new MalformedJwtException("Invalid JWT token");
         } catch (ExpiredJwtException e) {
-            throw new ExpiredJwtException(null, null, "JWT token is Expired");
+            throw new ExpiredJwtException(null, null, "AccessToken is Expired");
         } catch (UnsupportedJwtException ex) {
             throw new UnsupportedJwtException("JWT token is unsupported");
         } catch (IllegalArgumentException e) {

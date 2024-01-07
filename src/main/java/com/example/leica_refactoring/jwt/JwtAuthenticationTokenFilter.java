@@ -1,5 +1,6 @@
 package com.example.leica_refactoring.jwt;
 
+import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.error.security.ErrorJwtCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -36,7 +37,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         try {
             if (accessToken == null && refreshToken != null) {
-                if (jwtTokenProvider.validateToken(refreshToken) && path.contains("/reissue")) {
+                if (path.contains("/reissue")) {
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -44,19 +45,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             } else {
-                if (jwtTokenProvider.validateToken(accessToken)) {
+                if (jwtTokenProvider.validateAccessToken(accessToken)) {
                     this.setAuthentication(accessToken);
                 }
             }
-        }  catch (MalformedJwtException e) {
+        } catch (MalformedJwtException e) {
             errorCode = ErrorJwtCode.INVALID_JWT_FORMAT;
             setResponse(response, errorCode);
             return;
         } catch (ExpiredJwtException e) {
-            if (request.getHeader(refreshToken).equals("refreshToken")){
-                errorCode = ErrorJwtCode.EXPIRED_ACCESS_TOKEN;
-                setResponse(response, errorCode);
-            }
             errorCode = ErrorJwtCode.EXPIRED_ACCESS_TOKEN;
             setResponse(response, errorCode);
             return;
@@ -69,9 +66,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             setResponse(response, errorCode);
             return;
         } catch (RuntimeException e) {
-            errorCode = ErrorJwtCode.RUNTIME_EXCEPTION;
-            setResponse(response, errorCode);
-            return;
+            if (!jwtTokenProvider.validateAccessToken(accessToken)) {
+                errorCode = ErrorJwtCode.EXPIRED_ACCESS_TOKEN;
+                setResponse(response, errorCode);
+            } else {
+                errorCode = ErrorJwtCode.RUNTIME_EXCEPTION;
+                setResponse(response, errorCode);
+                return;
+            }
         }
 
         filterChain.doFilter(request, response);
