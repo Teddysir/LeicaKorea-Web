@@ -3,6 +3,7 @@ package com.example.leica_refactoring.service;
 import com.example.leica_refactoring.dto.member.MemberLoginRequestDto;
 import com.example.leica_refactoring.dto.member.MemberLoginResponseDto;
 import com.example.leica_refactoring.entity.Member;
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
 import com.example.leica_refactoring.error.exception.requestError.ExpiredAccessTokenException;
 import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
@@ -90,7 +91,11 @@ public class MemberService {
     public String returnRoleService(HttpServletRequest request) { // 유저 정보 반환 메서드
         String token = jwtTokenProvider.resolveAccessToken(request);
 
-        if (token == null || !checkAccessTokenExpired(request)) {
+        if(token == null) {
+            return UserRole.USER.getKey();
+        }
+
+        if (!checkAccessTokenExpired(request)) {
             throw new ExpiredAccessTokenException("1007",ErrorCode.EXPIRED_ACCESS_TOKEN);
         }
 
