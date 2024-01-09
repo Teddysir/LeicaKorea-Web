@@ -38,32 +38,32 @@ public class PostController {
 
     // 카테고리별 게시물 조회(부모 카테고리 기준)
     @Operation(summary = "카테고리별 게시물 조회(부모 카테고리 기준")
-    @GetMapping("/post/{parentCategory}")
-    public PaginationDto findAllPostByParentCategory(
-            @PathVariable String parentCategory,
+    @GetMapping("/post/{parentId}")
+    public PaginationDto findAllPostByParentCategoryById(
+            @PathVariable Long parentId,
             @RequestParam(defaultValue = "0")
             @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
             int page,
             @RequestParam(defaultValue = "10")
             @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
             int size) {
-        PaginationDto allPostByParentCategory = postService.findAllPostByParentCategory(parentCategory, PageRequest.of(page, size));
+        PaginationDto allPostByParentCategory = postService.findAllPostByParentCategory(parentId, PageRequest.of(page, size));
         return allPostByParentCategory;
     }
 
     // 카테고리별 게시물 조회(자식 카테고리 기준)
-    @GetMapping("/post/{parentCategory}/{childCategory}")
+    @GetMapping("/post/{parentId}/{childId}")
     @Operation(summary = "카테고리별 게시물 조회(자식 카테고리 기준)")
-    public PaginationDto findAllPostByChildCategory(
-            @PathVariable String parentCategory,
-            @PathVariable String childCategory,
+    public PaginationDto findAllPostByChildCategoryId(
+            @PathVariable Long parentId,
+            @PathVariable Long childId,
             @RequestParam(defaultValue = "0")
             @Parameter(name = "page", description = "페이지 번호", in = ParameterIn.QUERY)
             int page,
             @RequestParam(defaultValue = "10")
             @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY)
             int size) {
-        PaginationDto allPostByChildCategory = postService.findAllPostByChildCategory(parentCategory, childCategory, PageRequest.of(page, size));
+        PaginationDto allPostByChildCategory = postService.findAllPostByChildCategory(parentId, childId, PageRequest.of(page, size));
         return allPostByChildCategory;
     }
 
