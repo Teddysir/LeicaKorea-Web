@@ -12,11 +12,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Category findByName(String categoryName);
 
-    Page<Category> findByName(String categoryName, Pageable pageable);
+//    Page<Category> findByName(String categoryName, Pageable pageable);
 
-    Category findByParentName(String parentName);
-    Category findByChildName(String childName);
-
+    Category findCategoryById(Long categoryId);
 
     List<Category> findAllByName(String childName);
 

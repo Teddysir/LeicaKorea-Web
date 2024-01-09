@@ -104,13 +104,15 @@ public class PostService {
 
 
     // 부모 카테고리안에 존재하는 모든 게시물 반환
-    public PaginationDto findAllPostByParentCategory(String parentName, Pageable pageable) {
-        Category category = categoryRepository.findByName(parentName);
-        if (category == null) {
+    public PaginationDto findAllPostByParentCategory(Long parentId, Pageable pageable) {
+        Category categoryId = categoryRepository.findCategoryById(parentId);
+
+        Category categoryName = categoryRepository.findByName(categoryId.getName());
+        if (categoryName == null) {
             return getPaginationDto(0L, true, 0L, Collections.emptyList());
 
         } else {
-            List<Post> allPosts = category.getChild().stream()
+            List<Post> allPosts = categoryId.getChild().stream()
                     .flatMap(child -> child.getPosts().stream())
                     .sorted(Comparator.comparing(Post::getCreatedAt).reversed())
                     .collect(Collectors.toList());
@@ -142,16 +144,19 @@ public class PostService {
     }
 
     // 자식 카테고리 안에있는 모든 게시물 반환
-    public PaginationDto findAllPostByChildCategory(String parentName, String childName, Pageable pageable) {
-        List<Category> childCategories = categoryRepository.findAllByName(childName);
+    public PaginationDto findAllPostByChildCategory(Long parentId, Long childId, Pageable pageable) {
 
-        Category selectedChildCategory = null;
-        for (Category category : childCategories) {
-            if (category.getParent().getName().equals(parentName)) {
-                selectedChildCategory = category;
-                break;
-            }
+        Category parentCategoryId = categoryRepository.findCategoryById(parentId); // 부모카테고리 아이디값
+        Category childCategoryId = categoryRepository.findCategoryById(childId); // 자식 카테고리 id 값
+
+        if(!childCategoryId.getParent().equals(parentCategoryId)){
+            throw new BadRequestException("부모카테고리 내에 해당하는 자식 카테고리가 존재하지 않습니다.", ErrorCode.RUNTIME_EXCEPTION);
         }
+
+        Category childCategory = categoryRepository.findByName(childCategoryId.getName()); // 자식카테고리 id 에 일치하는 자식카테고리 이름
+
+        Category selectedChildCategory = childCategory;
+
 
         if (selectedChildCategory == null) {
             return getPaginationDto(0L, true, 0L, Collections.emptyList());
