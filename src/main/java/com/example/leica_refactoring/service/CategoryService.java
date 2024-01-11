@@ -8,6 +8,7 @@ import com.example.leica_refactoring.error.exception.CategoryAlreadyExistsExcept
 import com.example.leica_refactoring.error.exception.CategoryIsNotExists;
 import com.example.leica_refactoring.error.exception.ParentCategoryMaxException;
 import com.example.leica_refactoring.error.exception.ParentCategoryNotFoundException;
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.CategoryRepository;
@@ -48,11 +49,18 @@ public class CategoryService {
                 .build();
     }
 
-    public List<ResponseChildCategoryDto> findAllChildCategory(String parentCategory) {
-        Category category = categoryRepository.findByName(parentCategory);
+    public List<ResponseChildCategoryDto> findAllChildCategory(Long parentCategoryId) {
+
+        Category categoryId = categoryRepository.findCategoryById(parentCategoryId);
+
+        if(categoryId == null) {
+            throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
+        }
+
+        Category categoryName = categoryRepository.findByName(categoryId.getName());
 
 
-        List<ResponseChildCategoryDto> childCategoryDtos = category.getChild().stream()
+        List<ResponseChildCategoryDto> childCategoryDtos = categoryName.getChild().stream()
                 .map(childCategory -> {
                     List<Post> numbersOfPost = postRepository.findByChildCategory(childCategory);
                     // ResponseChildCategoryDto.builder()를 호출하고 필드를 적절히 매핑한 후 객체를 생성하고 반환합니다.
