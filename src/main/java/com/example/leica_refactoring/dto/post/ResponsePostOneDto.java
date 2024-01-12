@@ -18,6 +18,8 @@ public class ResponsePostOneDto {
     private String thumbnail;
     private String category;
     private String parentCategory;
+    private Long parentCategoryId;
+    private Long childCategoryId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
