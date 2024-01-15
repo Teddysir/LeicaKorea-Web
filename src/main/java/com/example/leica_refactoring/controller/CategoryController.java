@@ -33,10 +33,10 @@ public class CategoryController {
     }
 
     @Operation(summary = "부모 카테고리 밑에있는 하위 카테고리 조회")
-    @GetMapping("/category/{parentCategory}") // 부모카테고리 밑에있는 하위카테고리 조회
-    public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategory(
-            @PathVariable String parentCategory) {
-        List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentCategory);
+    @GetMapping("/category/{parentCategoryId}") // 부모카테고리 밑에있는 하위카테고리 조회
+    public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategoryId(
+            @PathVariable Long parentCategoryId) {
+        List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentCategoryId);
 
         return allChildCategory;
     }

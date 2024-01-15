@@ -43,23 +43,23 @@ public class CategoryService {
 
     private ResponseParentCategoryDto mapToResponseDto(Category category) {
         return ResponseParentCategoryDto.builder()
-                .name(category.getName())
                 .id(category.getId())
                 .build();
     }
 
-    public List<ResponseChildCategoryDto> findAllChildCategory(String parentCategory) {
-        Category category = categoryRepository.findByName(parentCategory);
+    public List<ResponseChildCategoryDto> findAllChildCategory(Long parentCategoryId) {
+
+        Category categoryId = categoryRepository.findCategoryById(parentCategoryId);
+        Category categoryName = categoryRepository.findByName(categoryId.getName());
 
 
-        List<ResponseChildCategoryDto> childCategoryDtos = category.getChild().stream()
+        List<ResponseChildCategoryDto> childCategoryDtos = categoryName.getChild().stream()
                 .map(childCategory -> {
                     List<Post> numbersOfPost = postRepository.findByChildCategory(childCategory);
                     // ResponseChildCategoryDto.builder()를 호출하고 필드를 적절히 매핑한 후 객체를 생성하고 반환합니다.
                     return ResponseChildCategoryDto.builder()
                             .id(childCategory.getId())
                             .size(numbersOfPost.size())
-                            .childName(childCategory.getName())
                             .build();
                 })
                 .collect(Collectors.toList());
