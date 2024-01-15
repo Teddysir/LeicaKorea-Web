@@ -1,6 +1,7 @@
 package com.example.leica_refactoring.controller;
 
 import com.example.leica_refactoring.dto.post.PaginationDto;
+import com.example.leica_refactoring.dto.post.RequestUpdatePostDto;
 import com.example.leica_refactoring.dto.search.RequestPostWithSearchableDto;
 import com.example.leica_refactoring.dto.post.ResponsePostListDto;
 import com.example.leica_refactoring.dto.post.ResponsePostOneDto;
@@ -88,10 +89,10 @@ public class PostController {
     // 자기 자신만 가능!
     @PutMapping("/post/{id}")
     @Operation(summary = "게시물 업데이트 (유저권한 필요)")
-    public Long updatePost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto, @PathVariable Long id,
+    public Long updatePost(@RequestBody RequestUpdatePostDto requestUpdatePostDto, @PathVariable Long id,
                            HttpServletRequest request) {
 
-        Long update = postService.update(id, requestPostWithSearchableDto, request);
+        Long update = postService.update(id, requestUpdatePostDto, request);
         return update;
     }
 
