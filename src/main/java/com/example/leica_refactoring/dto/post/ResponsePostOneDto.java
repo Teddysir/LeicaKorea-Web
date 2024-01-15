@@ -19,6 +19,7 @@ public class ResponsePostOneDto {
     private Long categoryId;
     private Long parentCategoryId;
 
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")

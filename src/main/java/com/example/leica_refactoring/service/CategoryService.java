@@ -8,6 +8,7 @@ import com.example.leica_refactoring.error.exception.CategoryAlreadyExistsExcept
 import com.example.leica_refactoring.error.exception.CategoryIsNotExists;
 import com.example.leica_refactoring.error.exception.ParentCategoryMaxException;
 import com.example.leica_refactoring.error.exception.ParentCategoryNotFoundException;
+import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
 import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.CategoryRepository;
@@ -67,6 +68,7 @@ public class CategoryService {
         return childCategoryDtos;
 
     }
+
 
     public Long createParentCategory(RequestParentCategoryDto parentCategory, HttpServletRequest request) {
         Member member = memberService.findMemberByToken(request);
