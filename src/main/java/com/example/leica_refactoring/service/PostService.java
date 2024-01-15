@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final CategoryRepository categoryRepository;
     private final SearchRepository searchRepository;
@@ -195,24 +194,24 @@ public class PostService {
     }
 
     // 내용 업데이트
-    public Long update(Long id, RequestPostWithSearchableDto requestPostDto, HttpServletRequest request) {
+    public Long update(Long id, RequestUpdatePostDto updatePostDto, HttpServletRequest request) {
         Member member = validateMemberAndPost(id, request);
 
         Post originPost = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("게시물이 존재하지 않습니다."));
 
-        String content = requestPostDto.getSearchContent();
-        RequestPostDto post = requestPostDto.getPost();
-
+        String content = updatePostDto.getSearchContent();
         SearchPost searchPost = searchRepository.findByPost_Id(id);
 
-        String newParentCategory = requestPostDto.getCategory().getParentName();
-        String newChildCategory = requestPostDto.getCategory().getChildName();
+        RequestUpdatePostCategoryDto post = updatePostDto.getPost();
 
-        Category newParentCategory1 = categoryRepository.findByName(newParentCategory);
-        Category newChildCategory1 = categoryRepository.findByName(newChildCategory);
+        Long newParentCategory = updatePostDto.getPost().getParentId();
+        Long newChildCategory = updatePostDto.getPost().getChildId();
 
-        if(newParentCategory1 == null || newChildCategory1 == null) {
+        Category newParentCategoryId = categoryRepository.findCategoryById(newParentCategory); // 일치하는 카테고리 아이디 있으면 찾기
+        Category newChildCategoryId = categoryRepository.findCategoryById(newChildCategory);
+
+        if(newParentCategoryId == null || newChildCategoryId == null) {
             throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
         }
 
@@ -224,8 +223,8 @@ public class PostService {
         originPost.setContent(post.getContent());
         originPost.setThumbnail(post.getThumbnail());
         originPost.setMember(member);
-        originPost.getChildCategory().setParent(newParentCategory1);
-        originPost.setChildCategory(newChildCategory1); // 이걸로 초기화를 하는거지
+        originPost.getChildCategory().setParent(newParentCategoryId);
+        originPost.setChildCategory(newChildCategoryId); // 이걸로 초기화를 하는거지
 
         // 업데이트된 게시물 저장
         Post updatedPost = postRepository.save(originPost);
@@ -277,7 +276,7 @@ public class PostService {
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
                     .thumbnail(post.getThumbnail())
-                    .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
+                    .categoryId(post.getChildCategory().getId() != null ? post.getChildCategory().getId() : null)
                     .build();
         } else {
             return null;
@@ -294,10 +293,8 @@ public class PostService {
                     .thumbnail(post.getThumbnail())
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
-                    .parentCategoryId(post.getChildCategory() != null ? post.getChildCategory().getParent().getId() : null)
-                    .childCategoryId(post.getChildCategory() != null ? post.getChildCategory().getId() : null)
-                    .parentCategory(post.getChildCategory() != null ? post.getChildCategory().getParent().getName() : null)
-                    .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
+                    .parentCategoryId(post.getChildCategory().getParent() != null ? post.getChildCategory().getParent().getId() : null)
+                    .categoryId(post.getChildCategory() != null ? post.getChildCategory().getId() : null)
                     .build();
         } else {
             return null;

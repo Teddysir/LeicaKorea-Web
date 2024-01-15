@@ -17,9 +17,9 @@ public class RequestPostDto {
     private String subTitle;
     @Schema(description = "썸네일", example = "썸네일")
     private String thumbnail;
-    @Schema(description = "현재 부모 카테고리", example = "현재 부모 카테고리")
+    @Schema(description = "부모 카테고리", example = "부모 카테고리")
     private String parentName;
-    @Schema(description = "현재 자식 카테고리", example = "현재 자식 카테고리")
+    @Schema(description = "자식 카테고리", example = "자식 카테고리")
     private String childName;
 
 

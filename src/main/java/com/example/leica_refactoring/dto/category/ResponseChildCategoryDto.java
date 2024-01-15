@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResponseChildCategoryDto {
     private Long id;
-    private String childName;
     private int size;
 }

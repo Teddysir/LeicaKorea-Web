@@ -44,7 +44,6 @@ public class CategoryService {
 
     private ResponseParentCategoryDto mapToResponseDto(Category category) {
         return ResponseParentCategoryDto.builder()
-                .name(category.getName())
                 .id(category.getId())
                 .build();
     }
@@ -52,11 +51,6 @@ public class CategoryService {
     public List<ResponseChildCategoryDto> findAllChildCategory(Long parentCategoryId) {
 
         Category categoryId = categoryRepository.findCategoryById(parentCategoryId);
-
-        if(categoryId == null) {
-            throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
-        }
-
         Category categoryName = categoryRepository.findByName(categoryId.getName());
 
 
@@ -67,7 +61,6 @@ public class CategoryService {
                     return ResponseChildCategoryDto.builder()
                             .id(childCategory.getId())
                             .size(numbersOfPost.size())
-                            .childName(childCategory.getName())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -75,6 +68,7 @@ public class CategoryService {
         return childCategoryDtos;
 
     }
+
 
     public Long createParentCategory(RequestParentCategoryDto parentCategory, HttpServletRequest request) {
         Member member = memberService.findMemberByToken(request);

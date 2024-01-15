@@ -26,7 +26,6 @@ public class Post extends PostTime {
     @Column(nullable = false)
     private String title;
 
-
     private String subTitle;
 
     @Lob

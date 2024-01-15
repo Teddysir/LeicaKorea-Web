@@ -7,5 +7,4 @@ import lombok.Data;
 @Builder
 public class ResponseParentCategoryDto {
     private Long id;
-    private String name;
 }
