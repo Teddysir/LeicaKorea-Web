@@ -53,6 +53,9 @@ public class CategoryService {
         Category categoryId = categoryRepository.findCategoryById(parentCategoryId);
         Category categoryName = categoryRepository.findByName(categoryId.getName());
 
+        if(categoryId == null) {
+            throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
+        }
 
         List<ResponseChildCategoryDto> childCategoryDtos = categoryName.getChild().stream()
                 .map(childCategory -> {
