@@ -4,7 +4,6 @@ import com.example.leica_refactoring.dto.post.PaginationDto;
 import com.example.leica_refactoring.dto.search.RequestPostWithSearchableDto;
 import com.example.leica_refactoring.dto.post.ResponsePostListDto;
 import com.example.leica_refactoring.dto.post.ResponsePostOneDto;
-import com.example.leica_refactoring.repository.PostRepository;
 import com.example.leica_refactoring.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 public class PostController {
 
     private final PostService postService;
-    private final PostRepository postRepository;
 
     @Operation(summary = "모든 게시물 조회")
     @GetMapping("/post")

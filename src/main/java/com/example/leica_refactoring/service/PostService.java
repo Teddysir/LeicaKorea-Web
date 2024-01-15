@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final CategoryRepository categoryRepository;
     private final SearchRepository searchRepository;
@@ -277,7 +276,7 @@ public class PostService {
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
                     .thumbnail(post.getThumbnail())
-                    .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
+                    .categoryId(post.getChildCategory().getId() != null ? post.getChildCategory().getId() : null)
                     .build();
         } else {
             return null;
@@ -294,8 +293,8 @@ public class PostService {
                     .thumbnail(post.getThumbnail())
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
-                    .parentCategory(post.getChildCategory() != null ? post.getChildCategory().getParent().getName() : null)
-                    .category(post.getChildCategory() != null ? post.getChildCategory().getName() : null)
+                    .parentCategoryId(post.getChildCategory().getParent() != null ? post.getChildCategory().getParent().getId() : null)
+                    .categoryId(post.getChildCategory() != null ? post.getChildCategory().getId() : null)
                     .build();
         } else {
             return null;
