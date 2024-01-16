@@ -16,8 +16,8 @@ public class ResponsePostOneDto {
     private String subTitle;
     private String content;
     private String thumbnail;
-    private Long categoryId;
-    private Long parentCategoryId;
+    private String childName;
+    private String parentName;
 
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")

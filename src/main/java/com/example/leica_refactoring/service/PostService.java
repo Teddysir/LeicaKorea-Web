@@ -5,12 +5,10 @@ import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedEx
 import com.example.leica_refactoring.error.security.ErrorCode;
 import com.example.leica_refactoring.repository.CategoryRepository;
 import com.example.leica_refactoring.dto.post.*;
-import com.example.leica_refactoring.dto.search.RequestPostWithSearchableDto;
 import com.example.leica_refactoring.entity.Category;
 import com.example.leica_refactoring.entity.Member;
 import com.example.leica_refactoring.entity.Post;
 import com.example.leica_refactoring.entity.SearchPost;
-import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.error.exception.AuthorOnlyAccessException;
 import com.example.leica_refactoring.repository.PostRepository;
 import com.example.leica_refactoring.enums.UserRole;
@@ -36,23 +34,19 @@ public class PostService {
 
 
     // 게시물 생성
-    public Long save(RequestPostWithSearchableDto requestPostDto, HttpServletRequest request) {
+    public Long save(RequestUpdatePostDto requestPostDto, HttpServletRequest request) {
         Member member = memberService.findMemberByToken(request);
         if (member.getUserRole() != UserRole.ADMIN) {
             throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION);
         } else {
             String content = requestPostDto.getSearchContent();
-            RequestPostDto postDto = requestPostDto.getPost();
+            RequestUpdatePostCategoryDto postDto = requestPostDto.getPost();
 
-            Category category = categoryRepository.findByName(postDto.getParentName());
+            Category categoryId = categoryRepository.findCategoryById(postDto.getParentId());
+            Category childCategoryId = categoryRepository.findCategoryById(postDto.getChildId());
 
-            Category childCategory = null;
-
-            for (Category category1 : category.getChild()) {
-                if (category1.getName().equals(postDto.getChildName())) {
-                    childCategory = category1;
-                    break;
-                }
+            if(categoryId == null) {
+                throw new BadRequestException("401", ErrorCode.RUNTIME_EXCEPTION);
             }
 
             Post post = Post.builder()
@@ -60,7 +54,7 @@ public class PostService {
                     .content(postDto.getContent())
                     .subTitle(postDto.getSubTitle())
                     .thumbnail(postDto.getThumbnail())
-                    .childCategory(childCategory)
+                    .childCategory(childCategoryId)
                     .member(member)
                     .build();
             Post save = postRepository.save(post);
@@ -263,20 +257,19 @@ public class PostService {
 
     private ResponsePostDto getBuild(Post post) {
         if (post != null) {
-            SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
-            String content = byPostId.getSearchContent();
-            content = content.replace("/", "");
-            content = content.substring(0, Math.min(content.length(), 30));
+//            SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
+//            String content = byPostId.getSearchContent();
+//            content = content.replace("/", "");
+//            content = content.substring(0, Math.min(content.length(), 30));
 
             return ResponsePostDto.builder()
                     .id(post.getId())
                     .title(post.getTitle())
-                    .content(content)
-                    .subTitle(post.getSubTitle())
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
                     .thumbnail(post.getThumbnail())
-                    .categoryId(post.getChildCategory().getId() != null ? post.getChildCategory().getId() : null)
+                    .parentName(post.getChildCategory().getParent().getName() != null ? post.getChildCategory().getParent().getName() : null)
+                    .childName(post.getChildCategory().getName() != null ? post.getChildCategory().getName() : null)
                     .build();
         } else {
             return null;
@@ -293,8 +286,8 @@ public class PostService {
                     .thumbnail(post.getThumbnail())
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
-                    .parentCategoryId(post.getChildCategory().getParent() != null ? post.getChildCategory().getParent().getId() : null)
-                    .categoryId(post.getChildCategory() != null ? post.getChildCategory().getId() : null)
+                    .parentName(post.getChildCategory().getParent().getName() != null ? post.getChildCategory().getParent().getName(): null)
+                    .childName(post.getChildCategory().getName() != null ? post.getChildCategory().getName() : null)
                     .build();
         } else {
             return null;

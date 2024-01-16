@@ -9,7 +9,7 @@ public class RequestUpdatePostDto {
 
     @Lob
     private String searchContent;
-
     private RequestUpdatePostCategoryDto post;
+
 
 }
