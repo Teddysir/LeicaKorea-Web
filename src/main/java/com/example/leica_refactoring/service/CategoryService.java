@@ -59,10 +59,10 @@ public class CategoryService {
 
         List<ResponseChildCategoryDto> childCategoryDtos = categoryName.getChild().stream()
                 .map(childCategory -> {
-                    List<Post> numbersOfPost = postRepository.findByChildCategory(childCategory);
+//                    List<Post> numbersOfPost = postRepository.findByChildCategory(childCategory);
                     return ResponseChildCategoryDto.builder()
+                            .childId(childCategory.getId())
                             .childName(childCategory.getName())
-                            .size(numbersOfPost.size())
                             .build();
                 })
                 .collect(Collectors.toList());

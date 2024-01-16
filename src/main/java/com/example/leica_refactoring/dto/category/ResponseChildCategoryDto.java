@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseChildCategoryDto {
+    private Long childId;
     private String childName;
-    private int size;
 }
