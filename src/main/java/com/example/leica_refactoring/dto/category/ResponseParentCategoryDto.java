@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class ResponseParentCategoryDto {
-    private Long id;
     private String parentName;
 }
