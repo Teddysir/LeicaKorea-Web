@@ -11,10 +11,9 @@ public class ResponsePostDto {
 
     private Long id;
     private String title;
-    private String content;
-    private String subTitle;
     private String thumbnail;
-    private Long categoryId;
+    private String parentName;
+    private String childName;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;

@@ -1,10 +1,6 @@
 package com.example.leica_refactoring.controller;
 
-import com.example.leica_refactoring.dto.post.PaginationDto;
-import com.example.leica_refactoring.dto.post.RequestUpdatePostDto;
-import com.example.leica_refactoring.dto.search.RequestPostWithSearchableDto;
-import com.example.leica_refactoring.dto.post.ResponsePostListDto;
-import com.example.leica_refactoring.dto.post.ResponsePostOneDto;
+import com.example.leica_refactoring.dto.post.*;
 import com.example.leica_refactoring.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -69,10 +65,10 @@ public class PostController {
     // 게시물 생성(ADMIN만 가능)
     @PostMapping("/post")
     @Operation(summary = "게시물 생성 (유저권한 필요)")
-    public ResponseEntity<String> createPost(@RequestBody RequestPostWithSearchableDto requestPostWithSearchableDto,
+    public ResponseEntity<String> createPost(@RequestBody RequestUpdatePostDto requestUpdatePostDto,
                                              HttpServletRequest request) {
 
-        Long save = postService.save(requestPostWithSearchableDto, request);
+        Long save = postService.save(requestUpdatePostDto, request);
 
         return ResponseEntity.ok().body("{\"postId\": " + save + "}");
     }

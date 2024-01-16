@@ -33,10 +33,10 @@ public class CategoryController {
     }
 
     @Operation(summary = "부모 카테고리 밑에있는 하위 카테고리 조회")
-    @GetMapping("/category/{parentCategoryId}") // 부모카테고리 밑에있는 하위카테고리 조회
+    @GetMapping("/category/{parentId}") // 부모카테고리 밑에있는 하위카테고리 조회
     public List<ResponseChildCategoryDto> findAllChildCategoryByParentCategoryId(
-            @PathVariable Long parentCategoryId) {
-        List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentCategoryId);
+            @PathVariable Long parentId) {
+        List<ResponseChildCategoryDto> allChildCategory = categoryService.findAllChildCategory(parentId);
 
         return allChildCategory;
     }
@@ -77,10 +77,10 @@ public class CategoryController {
 
 
     @Operation(summary = "자식 카테고리 삭제 (유저권한 필요)")
-    @DeleteMapping("/category/child/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId, HttpServletRequest request) {
+    @DeleteMapping("/category/child/{childId}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long childId, HttpServletRequest request) {
         try {
-            categoryService.deleteCategory(categoryId, request);
+            categoryService.deleteCategory(childId, request);
             return ResponseEntity.ok("카테고리 삭제 성공");
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 카테고리 입니다.");
