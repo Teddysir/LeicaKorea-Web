@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final PostRepository postRepository;
     private final MemberService memberService;
 
     public List<ResponseParentCategoryDto> getParentCategories() {
@@ -44,6 +43,7 @@ public class CategoryService {
 
     private ResponseParentCategoryDto mapToResponseDto(Category category) {
         return ResponseParentCategoryDto.builder()
+                .parentId(category.getId())
                 .parentName(category.getName())
                 .build();
     }
