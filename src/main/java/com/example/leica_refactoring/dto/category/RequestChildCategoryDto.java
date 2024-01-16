@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class RequestChildCategoryDto {
-    private String parentName;
+    private Long parentId;
     private String childName;
 
-    private RequestChildCategoryDto(String parentName, String childName) {
-        this.parentName = parentName;
+    private RequestChildCategoryDto(Long parentId, String childName) {
+        this.parentId = parentId;
         this.childName = childName;
     }
 }

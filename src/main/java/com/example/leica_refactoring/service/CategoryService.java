@@ -45,6 +45,7 @@ public class CategoryService {
     private ResponseParentCategoryDto mapToResponseDto(Category category) {
         return ResponseParentCategoryDto.builder()
                 .id(category.getId())
+                .parentName(category.getName())
                 .build();
     }
 
@@ -109,9 +110,9 @@ public class CategoryService {
         if (member.getUserRole() != UserRole.ADMIN) {
             throw new UnAuthorizedException("유저 권한이 없습니다.", ErrorCode.ACCESS_DENIED_EXCEPTION); // 나중에 오류처리 모두 ErrorCode 코드 추가해서 적용해주기
         } else {
-            Category parentCategory = categoryRepository.findByName(childCategory.getParentName());
+            Category parentCategory = categoryRepository.findCategoryById(childCategory.getParentId());
             if (parentCategory == null) {
-                throw new ParentCategoryNotFoundException(childCategory.getParentName());
+                throw new BadRequestException("401",ErrorCode.RUNTIME_EXCEPTION);
             } else {
                 String childName = childCategory.getChildName();
                 Category category = categoryRepository.findByName(childName);
