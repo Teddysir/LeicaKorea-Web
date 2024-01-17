@@ -18,18 +18,18 @@ public class RequestUpdatePostCategoryDto {
     @Schema(description = "썸네일", example = "썸네일")
     private String thumbnail;
     @Schema(description = "부모 카테고리", example = "부모 카테고리")
-    private Long parentId;
+    private String parentName;
     @Schema(description = "자식 카테고리", example = "자식 카테고리")
-    private Long childId;
+    private String childName;
 
 
-    private RequestUpdatePostCategoryDto(String title, String subTitle, String content, String thumbnail, Long parentId, Long childId) {
+    private RequestUpdatePostCategoryDto(String title, String subTitle, String content, String thumbnail, String parentName, String childName) {
         this.title = title;
         this.subTitle = subTitle;
         this.content = content;
         this.thumbnail = thumbnail;
-        this.parentId = parentId;
-        this.childId = childId;
+        this.parentName = parentName;
+        this.childName = childName;
     }
 
     @JsonPOJOBuilder
@@ -38,8 +38,8 @@ public class RequestUpdatePostCategoryDto {
         String content;
         String subtitle;
         String thumbnail;
-        Long parentId;
-        Long childId;
+        String parentName;
+        String childName;
 
         Builder withTitle(String title) {
             this.title = title;
@@ -61,18 +61,18 @@ public class RequestUpdatePostCategoryDto {
             return this;
         }
 
-        Builder withParentId(Long parentId) {
-            this.parentId = parentId;
+        Builder withParentName(String parentName) {
+            this.parentName = parentName;
             return this;
         }
 
-        Builder withChildId(Long childId) {
-            this.childId = childId;
+        Builder withChildName(String childName) {
+            this.childName = childName;
             return this;
         }
 
         public RequestUpdatePostCategoryDto build() {
-            return new RequestUpdatePostCategoryDto(title, subtitle, content, thumbnail, parentId, childId);
+            return new RequestUpdatePostCategoryDto(title, subtitle, content, thumbnail, parentName, childName);
         }
     }
 }

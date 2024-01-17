@@ -42,10 +42,15 @@ public class PostService {
             String content = requestPostDto.getSearchContent();
             RequestUpdatePostCategoryDto postDto = requestPostDto.getPost();
 
-            Category categoryId = categoryRepository.findCategoryById(postDto.getParentId());
-            Category childCategoryId = categoryRepository.findCategoryById(postDto.getChildId());
+//            Category categoryId = categoryRepository.findCategoryById(postDto.getParentId());
+//            Category childCategoryId = categoryRepository.findCategoryById(postDto.getChildId());
 
-            if(categoryId == null) {
+            Category parentCategoryName = categoryRepository.findByName(postDto.getParentName());
+            Category childCategoryName = categoryRepository.findByName(postDto.getChildName());
+
+            Category parentCategoryId = categoryRepository.findCategoryById(parentCategoryName.getId());
+
+            if(parentCategoryId == null) {
                 throw new BadRequestException("401", ErrorCode.RUNTIME_EXCEPTION);
             }
 
@@ -54,7 +59,7 @@ public class PostService {
                     .content(postDto.getContent())
                     .subTitle(postDto.getSubTitle())
                     .thumbnail(postDto.getThumbnail())
-                    .childCategory(childCategoryId)
+                    .childCategory(childCategoryName)
                     .member(member)
                     .build();
             Post save = postRepository.save(post);
@@ -199,13 +204,19 @@ public class PostService {
 
         RequestUpdatePostCategoryDto post = updatePostDto.getPost();
 
-        Long newParentCategory = updatePostDto.getPost().getParentId();
-        Long newChildCategory = updatePostDto.getPost().getChildId();
+        String parentCategoryName = updatePostDto.getPost().getParentName();
+        String childCategoryName = updatePostDto.getPost().getChildName();
 
-        Category newParentCategoryId = categoryRepository.findCategoryById(newParentCategory); // 일치하는 카테고리 아이디 있으면 찾기
-        Category newChildCategoryId = categoryRepository.findCategoryById(newChildCategory);
+        Category newParentCategoryName = categoryRepository.findByName(parentCategoryName);
+        Category newChildCategoryName = categoryRepository.findByName(childCategoryName);
 
-        if(newParentCategoryId == null || newChildCategoryId == null) {
+//        Long newParentCategory = updatePostDto.getPost().getParentId();
+//        Long newChildCategory = updatePostDto.getPost().getChildId();
+//
+        Category newParentCategoryId = categoryRepository.findCategoryById(newParentCategoryName.getId()); // 일치하는 카테고리 아이디 있으면 찾기
+        Category newChildCategoryId = categoryRepository.findCategoryById(newChildCategoryName.getId());
+
+        if(newChildCategoryId == null || newParentCategoryId == null) {
             throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
         }
 
@@ -217,8 +228,8 @@ public class PostService {
         originPost.setContent(post.getContent());
         originPost.setThumbnail(post.getThumbnail());
         originPost.setMember(member);
-        originPost.getChildCategory().setParent(newParentCategoryId);
-        originPost.setChildCategory(newChildCategoryId); // 이걸로 초기화를 하는거지
+        originPost.getChildCategory().setParent(newParentCategoryName);
+        originPost.setChildCategory(newChildCategoryName); // 이걸로 초기화를 하는거지
 
         // 업데이트된 게시물 저장
         Post updatedPost = postRepository.save(originPost);

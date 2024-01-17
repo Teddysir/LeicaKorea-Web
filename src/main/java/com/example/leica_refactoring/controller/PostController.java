@@ -63,7 +63,7 @@ public class PostController {
     }
 
     // 게시물 생성(ADMIN만 가능)
-    @PostMapping("/post")
+    @PostMapping("/post") // 수정
     @Operation(summary = "게시물 생성 (유저권한 필요)")
     public ResponseEntity<String> createPost(@RequestBody RequestUpdatePostDto requestUpdatePostDto,
                                              HttpServletRequest request) {
@@ -83,7 +83,7 @@ public class PostController {
     }
 
     // 자기 자신만 가능!
-    @PutMapping("/post/{id}")
+    @PutMapping("/post/{id}") // 수정
     @Operation(summary = "게시물 업데이트 (유저권한 필요)")
     public Long updatePost(@RequestBody RequestUpdatePostDto requestUpdatePostDto, @PathVariable Long id,
                            HttpServletRequest request) {
