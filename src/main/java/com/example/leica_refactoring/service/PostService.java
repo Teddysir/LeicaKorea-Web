@@ -297,6 +297,8 @@ public class PostService {
                     .thumbnail(post.getThumbnail())
                     .createdAt(post.getCreatedAt())
                     .modified_at(post.getModified_at())
+                    .parentId(post.getChildCategory().getParent().getId() != null ? post.getChildCategory().getParent().getId() : null)
+                    .childId(post.getChildCategory().getId() != null ? post.getChildCategory().getId() : null)
                     .parentName(post.getChildCategory().getParent().getName() != null ? post.getChildCategory().getParent().getName(): null)
                     .childName(post.getChildCategory().getName() != null ? post.getChildCategory().getName() : null)
                     .build();

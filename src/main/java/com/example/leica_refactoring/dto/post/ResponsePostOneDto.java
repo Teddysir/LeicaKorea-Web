@@ -18,6 +18,8 @@ public class ResponsePostOneDto {
     private String thumbnail;
     private String childName;
     private String parentName;
+    private Long childId;
+    private Long parentId;
 
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "Asia/Seoul")
