@@ -196,30 +196,28 @@ public class PostService {
     public Long update(Long id, RequestUpdatePostDto updatePostDto, HttpServletRequest request) {
         Member member = validateMemberAndPost(id, request);
 
-        Post originPost = postRepository.findById(id)
+        Post originPost = postRepository.findById(id) // 게시물 찾기
                 .orElseThrow(() -> new RuntimeException("게시물이 존재하지 않습니다."));
 
-        String content = updatePostDto.getSearchContent();
-        SearchPost searchPost = searchRepository.findByPost_Id(id);
+        String content = updatePostDto.getSearchContent(); // 검색내용 찾기
+        SearchPost searchPost = searchRepository.findByPost_Id(id); // 검색 내용 id 찾기
 
-        RequestUpdatePostCategoryDto post = updatePostDto.getPost();
+        RequestUpdatePostCategoryDto post = updatePostDto.getPost(); // 수정 내용 받아오고
 
-        String parentCategoryName = updatePostDto.getPost().getParentName();
-        String childCategoryName = updatePostDto.getPost().getChildName();
+        String parentCategoryName = updatePostDto.getPost().getParentName(); // 수정할 부모 카테고리 이름 받아오기
+        String childCategoryName = updatePostDto.getPost().getChildName(); // 수정할 자식 카테고리 이름 받아오기
 
-        Category newParentCategoryName = categoryRepository.findByName(parentCategoryName);
-        Category newChildCategoryName = categoryRepository.findByName(childCategoryName);
+        Category newParentCategoryName = categoryRepository.findByName(parentCategoryName); // 수정할 부모 카테고리가 db 카테고리에 일치하는거 찾아오기
+        Category newChildCategoryName = categoryRepository.findByName(childCategoryName); // 수정할 자식 카테고리가 db 카테고리에 일치하는거 찾아오기
 
-//        Long newParentCategory = updatePostDto.getPost().getParentId();
-//        Long newChildCategory = updatePostDto.getPost().getChildId();
-//
-        Category newParentCategoryId = categoryRepository.findCategoryById(newParentCategoryName.getId()); // 일치하는 카테고리 아이디 있으면 찾기
-        Category newChildCategoryId = categoryRepository.findCategoryById(newChildCategoryName.getId());
+        Category newParentCategoryId = categoryRepository.findCategoryById(newParentCategoryName.getId()); // db에서 찾은 부모카테고리 id값 받아오기
+        Category newChildCategoryId = categoryRepository.findCategoryById(newChildCategoryName.getId()); // db에서 찾은 자식 카테고리 id값 받아오기
 
         if(newChildCategoryId == null || newParentCategoryId == null) {
             throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
         }
 
+        // 그러면 게시물은 수정이 되고 그 카테고리는 그대로 있거나 게시물이 속한 카테고리를 옮겨줘야하는데 지금 카테고리 자체를 옮기고있는거지?
         searchPost.setSearchContent(content);
 
         // 게시물 내용 업데이트
@@ -228,8 +226,10 @@ public class PostService {
         originPost.setContent(post.getContent());
         originPost.setThumbnail(post.getThumbnail());
         originPost.setMember(member);
-        originPost.getChildCategory().setParent(newParentCategoryName);
-        originPost.setChildCategory(newChildCategoryName); // 이걸로 초기화를 하는거지
+
+        originPost.setChildCategory(newChildCategoryName); // 자식도 원래 1의 2였는데 부모값이 2인 자식카테고리의 2로 가야하는데 새로운 2의 3이 되어버려
+        originPost.getChildCategory().setParent(newParentCategoryName); //  부모가 바껴 1 -> 2로 바껴
+//        originPost.setChildCategory(newChildCategoryName); // 이걸로 초기화를 하는거지
 
         // 업데이트된 게시물 저장
         Post updatedPost = postRepository.save(originPost);
