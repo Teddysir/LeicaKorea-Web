@@ -6,6 +6,8 @@ RUN chmod +x ./gradlew && ./gradlew clean bootJar
 FROM openjdk:11-jdk
 WORKDIR /tmp
 COPY --from=build /tmp/build/libs/leica_refactoring-0.0.1-SNAPSHOT.jar /tmp/leicablog.jar
-COPY /home/jenkins/application.yml /tmp
+#COPY /home/jenkins/application.yml /tmp
+RUN cd /home/jenkins
+RUN cat application.yml
 
 ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -Dspring.config.location=/tmp/application.yml -jar /tmp/leicablog.jar"]
