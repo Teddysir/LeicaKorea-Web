@@ -1,0 +1,59 @@
+server:
+  port: 8081
+spring:
+  redis:
+    host: localhost
+    port: 6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ENC(TMEBgY93F3ZX8L+PH1rkR6EYPI+R7z5koz1H7FP2+1I=)
+    password: ENC(9R1Hoor1fR0EsgFGMRhzXHecq/5FEaw+Pa2S/XoXPe4=)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: true
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  profiles:
+    active: local
+  datasource:
+    driver-class-name: ENC(6+1h2S3ysp/BzgWS9o24FWBYVbKuUNoiDsN/CsGP2pMq2c9c513J/g==)
+    url: ENC(Yvns3BWLWLRYuhFGSASUC5GxacfHsc4NOM/7kFH2a7KR+nf3cqn9BcO7TwRZ+/XIyPCHLFbUpq09hxefku4RmJWpeWfh2/JrrgDS7o5g3UeeqNAzjZMFzd9SKMog1owaaWrWQbGrXvacIJSwCXyv2zqGAuiOk9lktrLoM/OTnajMtd9LiHnhRHnbaMOOt1K7)
+    username: ENC(oCDPqeUEFRJlOtqw6L2vZw==)
+    password: ENC(53GlaF/BGt+5wVm2v0N6S6ocpAzccb5M)
+  jpa:
+    database-platform: ENC(cYD7b/AInW1kDKLzYMbX2jMZtwV/pH7WpuaZOXYtPhMIUKncrDFWPyttZZwog2Ht)
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        show_sql: false
+        format_sql: true
+    open-in-view: false
+
+jwt:
+  secret: ENC(w1leZoAU55dyc7iP9Ag8Sq+sWuxDyPwFLMwmbvB3Um9+b7wPssD2347jThtikJwyfF4B4qFArcYYZfyIMBSHRDp0cs/eqDYfbCqW245GQDlAxS9bZbYUWxHW6BTfgfse6auyAeDoBu1W+5en0XaVAIVCjko9tTUf/3NH9X0D2tBLxcKAXd8W6vJy7gWF4C/uHcbUZXhn+25512zExEBm4Q==)
+
+cloud:
+  aws:
+    region:
+      static: ENC(ncwHsrTaLV9piK/H+FgIEqo0WT8EVaFK)
+    stack:
+      auto: false
+    s3:
+      bucket: ENC(bcL7NxUXdHY7bNG1dbN7ZcSh73UY05E7FNuYHufhdjE=)
+      default-url: ENC(phx5ij5723VFjCZfvfbJXV6SICPGsgFhQiMi5FdAUEDFARgUvzosHzDzDsKhTO7jJbmDOGxluGaSkD+vsBt/hqbxws9DaA6i)
+
+iamAccessKey: ENC(rED7HUMX3UIwO884LZrDRBybDRChggg2ytEwxE6rYN8=)
+iamSecretKey: ENC(xtNOV7ZR9Jdd5xI/Ewn5QVxY0rxK9bm9ffWeBgJpu7Inatm9cm2H27BnrcKnNW0J1IbDkZv3ZS4=)
