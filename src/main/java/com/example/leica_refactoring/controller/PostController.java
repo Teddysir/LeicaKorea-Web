@@ -63,7 +63,7 @@ public class PostController {
     }
 
     // 게시물 생성(ADMIN만 가능)
-    @PostMapping("/post") // 수정
+    @PostMapping("/post")
     @Operation(summary = "게시물 생성 (유저권한 필요)")
     public ResponseEntity<String> createPost(@RequestBody RequestUpdatePostDto requestUpdatePostDto,
                                              HttpServletRequest request) {
