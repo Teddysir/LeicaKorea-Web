@@ -37,6 +37,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         try {
             if (accessToken == null && refreshToken != null) {
+                jwtTokenProvider.validateRefreshToken(refreshToken);
                 if (path.contains("/reissue")) {
                     filterChain.doFilter(request, response);
                     return;
@@ -66,14 +67,17 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             setResponse(response, errorCode);
             return;
         } catch (RuntimeException e) {
-            if (!jwtTokenProvider.validateAccessToken(accessToken)) {
-                errorCode = ErrorJwtCode.EXPIRED_ACCESS_TOKEN;
-                setResponse(response, errorCode);
-            } else {
-                errorCode = ErrorJwtCode.RUNTIME_EXCEPTION;
-                setResponse(response, errorCode);
-                return;
-            }
+            errorCode = ErrorJwtCode.RUNTIME_EXCEPTION;
+            setResponse(response, errorCode);
+            return;
+//            if (!jwtTokenProvider.validateAccessToken(accessToken)) {
+//                errorCode = ErrorJwtCode.EXPIRED_ACCESS_TOKEN;
+//                setResponse(response, errorCode);
+//            } else {
+//                errorCode = ErrorJwtCode.RUNTIME_EXCEPTION;
+//                setResponse(response, errorCode);
+//                return;
+//            }
         }
 
         filterChain.doFilter(request, response);

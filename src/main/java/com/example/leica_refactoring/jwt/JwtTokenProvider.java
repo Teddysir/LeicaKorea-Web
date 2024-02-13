@@ -104,8 +104,6 @@ public class JwtTokenProvider {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return ErrorCode.EXPIRED_ACCESS_TOKEN.getMessage();
         }
-
-
     }
 
     public String reissueRefreshToken(String refreshToken, HttpServletResponse response) {
