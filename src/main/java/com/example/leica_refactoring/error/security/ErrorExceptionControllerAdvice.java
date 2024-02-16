@@ -1,13 +1,15 @@
 package com.example.leica_refactoring.error.security;
 
-import com.example.leica_refactoring.error.exception.requestError.BadRequestException;
-import com.example.leica_refactoring.error.exception.requestError.ExpiredAccessTokenException;
-import com.example.leica_refactoring.error.exception.requestError.ExpiredRefreshTokenException;
-import com.example.leica_refactoring.error.exception.requestError.UnAuthorizedException;
+import com.example.leica_refactoring.error.exception.requestError.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RequiredArgsConstructor
 @RestControllerAdvice
@@ -53,4 +55,10 @@ public class ErrorExceptionControllerAdvice {
                         .build());
     }
 
+    public ErrorEntity getErrorResponse(String code, String message) {
+        ErrorEntity response = new ErrorEntity(code, message);
+        response.getCode();
+        response.getMessage();
+        return response;
+    }
 }

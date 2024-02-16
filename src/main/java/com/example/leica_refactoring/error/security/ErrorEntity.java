@@ -13,7 +13,7 @@ public class ErrorEntity {
     private String message;
 
     @Builder
-    public ErrorEntity(HttpStatus httpStatus, String code, String message) {
+    public ErrorEntity(String code, String message) {
         this.code = code;
         this.message = message;
     }
