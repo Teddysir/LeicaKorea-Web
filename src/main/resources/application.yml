@@ -24,8 +24,6 @@ spring:
     multipart:
       max-file-size: 5GB
       max-request-size: 5GB
-  profiles:
-    active: local
   datasource:
     driver-class-name: ENC(6+1h2S3ysp/BzgWS9o24FWBYVbKuUNoiDsN/CsGP2pMq2c9c513J/g==)
     url: ENC(Yvns3BWLWLRYuhFGSASUC5GxacfHsc4NOM/7kFH2a7KR+nf3cqn9BcO7TwRZ+/XIyPCHLFbUpq09hxefku4RmJWpeWfh2/JrrgDS7o5g3UeeqNAzjZMFzd9SKMog1owaaWrWQbGrXvacIJSwCXyv2zqGAuiOk9lktrLoM/OTnajMtd9LiHnhRHnbaMOOt1K7)
