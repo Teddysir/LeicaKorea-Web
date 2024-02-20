@@ -5,12 +5,14 @@ import com.example.leica_refactoring.error.exception.requestError.ExpiredAccessT
 import com.example.leica_refactoring.error.exception.requestError.ExpiredRefreshTokenException;
 import com.example.leica_refactoring.error.exception.requestError.ForbiddenException;
 import com.example.leica_refactoring.error.security.ErrorCode;
+import com.example.leica_refactoring.error.security.ErrorJwtCode;
 import com.example.leica_refactoring.repository.MemberRepository;
 import com.example.leica_refactoring.service.jwt.CustomUserDetailsService;
 import com.example.leica_refactoring.service.jwt.RedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Key;
 import java.util.Base64;
 import java.util.*;
@@ -104,8 +107,6 @@ public class JwtTokenProvider {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             return ErrorCode.EXPIRED_ACCESS_TOKEN.getMessage();
         }
-
-
     }
 
     public String reissueRefreshToken(String refreshToken, HttpServletResponse response) {
@@ -137,7 +138,7 @@ public class JwtTokenProvider {
         } catch (MalformedJwtException e) {
             throw new MalformedJwtException("Invalid JWT token");
         } catch (ExpiredJwtException e) {
-            throw new ExpiredRefreshTokenException("1006", ErrorCode.EXPIRED_REFRESH_TOKEN); // 이부분에 걸리네
+            throw new ExpiredRefreshTokenException("1006", ErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (UnsupportedJwtException ex) {
             throw new UnsupportedJwtException("JWT token is unsupported");
         } catch (IllegalArgumentException e) {
@@ -202,4 +203,5 @@ public class JwtTokenProvider {
             throw new UnsupportedJwtException("Can't extract token Type");
         }
     }
+
 }
