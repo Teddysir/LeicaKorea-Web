@@ -42,16 +42,17 @@ public class PostService {
             String content = requestPostDto.getSearchContent();
             RequestUpdatePostCategoryDto postDto = requestPostDto.getPost();
 
-//            Category categoryId = categoryRepository.findCategoryById(postDto.getParentId());
-//            Category childCategoryId = categoryRepository.findCategoryById(postDto.getChildId());
-
             Category parentCategoryName = categoryRepository.findByName(postDto.getParentName());
             Category childCategoryName = categoryRepository.findByName(postDto.getChildName());
 
             Category parentCategoryId = categoryRepository.findCategoryById(parentCategoryName.getId());
 
             if(parentCategoryId == null) {
-                throw new BadRequestException("401", ErrorCode.RUNTIME_EXCEPTION);
+                throw new BadRequestException("400", ErrorCode.RUNTIME_EXCEPTION);
+            }
+
+            if(childCategoryName == null) {
+                throw new BadRequestException("400", ErrorCode.RUNTIME_EXCEPTION);
             }
 
             Post post = Post.builder()
