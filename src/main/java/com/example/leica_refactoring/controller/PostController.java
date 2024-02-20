@@ -70,7 +70,7 @@ public class PostController {
 
         Long save = postService.save(requestUpdatePostDto, request);
 
-        return ResponseEntity.ok().body("{\"postId\": " + save + "}");
+        return ResponseEntity.ok().body("게시물 생성! postId : " + save);
     }
 
     @GetMapping("/post/find/{id}")
@@ -85,18 +85,19 @@ public class PostController {
     // 자기 자신만 가능!
     @PutMapping("/post/{id}") // 수정
     @Operation(summary = "게시물 업데이트 (유저권한 필요)")
-    public Long updatePost(@RequestBody RequestUpdatePostDto requestUpdatePostDto, @PathVariable Long id,
+    public ResponseEntity<String> updatePost(@RequestBody RequestUpdatePostDto requestUpdatePostDto, @PathVariable Long id,
                            HttpServletRequest request) {
 
         Long update = postService.update(id, requestUpdatePostDto, request);
-        return update;
+        return ResponseEntity.ok().body("게시물 수정! postId : " + update);
     }
 
     // 자기 자신만 가능
     @DeleteMapping("/post/{id}")
     @Operation(summary = "게시물 삭제 (유저권한 필요)")
-    public void deletePost(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<String> deletePost(@PathVariable Long id, HttpServletRequest request) {
         postService.delete(id, request);
+        return ResponseEntity.ok().body("게시물 삭제! postId : " + id);
     }
 
 }

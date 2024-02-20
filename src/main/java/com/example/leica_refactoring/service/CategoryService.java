@@ -54,8 +54,8 @@ public class CategoryService {
         Category categoryId = categoryRepository.findCategoryById(parentCategoryId);
         Category categoryName = categoryRepository.findByName(categoryId.getName());
 
-        if(categoryId == null) {
-            throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
+        if (categoryId == null) {
+            throw new BadRequestException("400", ErrorCode.RUNTIME_EXCEPTION);
         }
 
         List<ResponseChildCategoryDto> childCategoryDtos = categoryName.getChild().stream()
@@ -112,7 +112,7 @@ public class CategoryService {
         } else {
             Category parentCategory = categoryRepository.findCategoryById(childCategory.getParentId());
             if (parentCategory == null) {
-                throw new BadRequestException("401",ErrorCode.RUNTIME_EXCEPTION);
+                throw new BadRequestException("401", ErrorCode.RUNTIME_EXCEPTION);
             } else {
                 String childName = childCategory.getChildName();
                 Category category = categoryRepository.findByName(childName);

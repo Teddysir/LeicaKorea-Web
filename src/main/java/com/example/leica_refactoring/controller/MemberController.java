@@ -54,7 +54,7 @@ public class MemberController {
         if (isTokenValid) {
             return ResponseEntity.ok().build(); // Returns HTTP 200 OK
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Or any other HTTP status code you want to return
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

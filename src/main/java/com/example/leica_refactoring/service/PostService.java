@@ -47,11 +47,7 @@ public class PostService {
 
             Category parentCategoryId = categoryRepository.findCategoryById(parentCategoryName.getId());
 
-            if(parentCategoryId == null) {
-                throw new BadRequestException("400", ErrorCode.RUNTIME_EXCEPTION);
-            }
-
-            if(childCategoryName == null) {
+            if(parentCategoryId == null || childCategoryName == null) {
                 throw new BadRequestException("400", ErrorCode.RUNTIME_EXCEPTION);
             }
 
@@ -218,7 +214,6 @@ public class PostService {
             throw new BadRequestException("400",ErrorCode.RUNTIME_EXCEPTION);
         }
 
-        // 그러면 게시물은 수정이 되고 그 카테고리는 그대로 있거나 게시물이 속한 카테고리를 옮겨줘야하는데 지금 카테고리 자체를 옮기고있는거지?
         searchPost.setSearchContent(content);
 
         // 게시물 내용 업데이트
@@ -228,9 +223,8 @@ public class PostService {
         originPost.setThumbnail(post.getThumbnail());
         originPost.setMember(member);
 
-        originPost.setChildCategory(newChildCategoryName); // 자식도 원래 1의 2였는데 부모값이 2인 자식카테고리의 2로 가야하는데 새로운 2의 3이 되어버려
-        originPost.getChildCategory().setParent(newParentCategoryName); //  부모가 바껴 1 -> 2로 바껴
-//        originPost.setChildCategory(newChildCategoryName); // 이걸로 초기화를 하는거지
+        originPost.setChildCategory(newChildCategoryName);
+        originPost.getChildCategory().setParent(newParentCategoryName);
 
         // 업데이트된 게시물 저장
         Post updatedPost = postRepository.save(originPost);
@@ -238,7 +232,6 @@ public class PostService {
         return updatedPost.getId();
 
     }
-
 
     public void delete(Long id, HttpServletRequest request) {
         validateMemberAndPost(id, request);
@@ -269,10 +262,6 @@ public class PostService {
 
     private ResponsePostDto getBuild(Post post) {
         if (post != null) {
-//            SearchPost byPostId = searchRepository.findByPost_Id(post.getId());
-//            String content = byPostId.getSearchContent();
-//            content = content.replace("/", "");
-//            content = content.substring(0, Math.min(content.length(), 30));
 
             return ResponsePostDto.builder()
                     .id(post.getId())
