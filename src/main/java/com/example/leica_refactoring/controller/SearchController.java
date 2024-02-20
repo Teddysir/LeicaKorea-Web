@@ -16,7 +16,6 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    // 게시물 검색(완성)
     @GetMapping("/search")
     @Operation(summary = "게시물 검색")
     public PaginationSearchDto searchPost(@RequestParam(value = "keyword") String keyword, Pageable pageable) {

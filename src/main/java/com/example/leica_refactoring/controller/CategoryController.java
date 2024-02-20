@@ -22,8 +22,6 @@ import java.util.NoSuchElementException;
 public class CategoryController {
 
     private final CategoryService categoryService;
-    private final MemberService memberService;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Operation(summary = "모든 부모 카테고리 반환")
     @GetMapping("/category/parent") // 모든 부모 카테고리 반환
