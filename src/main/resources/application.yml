@@ -26,9 +26,9 @@ spring:
       max-request-size: 5GB
   datasource:
     driver-class-name: ENC(6+1h2S3ysp/BzgWS9o24FWBYVbKuUNoiDsN/CsGP2pMq2c9c513J/g==)
-    url: ENC(shtijiiy6CanB7RXGZJUK/HonygKpUL/R8fgH8lMGp8QZ2nh0ns3U5bnST4eHf2Qq2heVdWLR95VPopzRAqQqU6Llz0QJ5vCi05ccu8DMYrQfj/uajD0NFo6EgxJHwA4GGa4UdkQ7Xn3voP7+wJu6gq7ThVqjJRdaL8ljyNE8TukfSRzJJLZnOBcgRnwP3EqF+jK65tDqLI=)
+    url: ENC(bcpDYw6YE7SwjOiqzWKq6ZLg3S7RIcxGsmprMUxrQLxCMsV2/nMHi7Pnl1jSMO2y57Q/8W15Df+L4PuvoldwnTnTR5Y+Hid0zyOTtKQ01Jd4QP5/RfgO2xAO6bC5qb/bqGSXKteNW3qssrKxQX4zXQp/3Qc+6bJrqrpEUAtiB9DTPaZuWovCdh/eVkCdhsd8tGf9Cih+wlQ=)
     username: ENC(oCDPqeUEFRJlOtqw6L2vZw==)
-    password: ENC(53GlaF/BGt+5wVm2v0N6S6ocpAzccb5M)
+    password: ENC(j8dY2RMemlF0HH687LApcS9/qxLRnMjc)
   jpa:
     database-platform: ENC(cYD7b/AInW1kDKLzYMbX2jMZtwV/pH7WpuaZOXYtPhMIUKncrDFWPyttZZwog2Ht)
     hibernate:
