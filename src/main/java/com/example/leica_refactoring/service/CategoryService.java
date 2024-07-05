@@ -180,11 +180,18 @@ public class CategoryService {
                 throw new CategoryIsNotExists("존재하지 않는 카테고리입니다.");
             }
 
-            Category CategoryId = originCategory.get();
-            CategoryId.setName(dto.getCategoryName());
-            categoryRepository.save(CategoryId);
+            Category category = categoryRepository.findByName(dto.getCategoryName());
 
-            return CategoryId.getId();
+            if(category != null) {
+                throw new CategoryAlreadyExistsException(category.getName());
+            } else {
+
+                Category CategoryId = originCategory.get();
+                CategoryId.setName(dto.getCategoryName());
+                categoryRepository.save(CategoryId);
+
+                return CategoryId.getId();
+            }
 
         }
 
