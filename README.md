@@ -18,7 +18,7 @@
 - Redis
 
 ### 💻 DevOps
-- AWS EC2, RDS, Route53
+- AWS EC2, RDS, Route53, S3
 - Docker
 - Nginx
 - Jenkins
@@ -32,9 +32,38 @@
 ## ERD
 ![image](https://github.com/user-attachments/assets/8099461e-7aa1-4a88-880e-4da5c210f6bf)
 
+## 📱 서비스 소개
 
+### Screen UI
+----
+
+### 로그인
+- 서버 관리자가 지정한 계정으로 로그인을 진행한다.
+- 관리자를 제외한 일반사용자는 게시글을 읽기 권한만 소유한다.
+
+< 이미지 대기.. >
+
+----
+
+### 게시물 조회
+- 메인 페이지에서는 가장 최신 게시물 먼저 상위 5개가 조회 된다.
+- 카테고리를 누르게되면 해당 카테고리에 속해있는 게시물들이 나타난다.
+- 하나의 게시물에는 제목, 내용이 존재하며 이미지가 존재한다. 이미지는 S3를 활용하여 사용한다.
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/cddc1492-b6b5-4b06-8e19-acfa1186a64e" />
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/d3284594-4ca6-4a73-99d4-ade28630f547" />
+
+----
+
+### 서버 배포 & CI/CD
+<img width="925" alt="image" src="https://github.com/user-attachments/assets/b4346665-aa42-4969-9afa-200ab1f6a091" />
+
+
+----
 
   
+### 🍀 프론트 Github
 
-Leica Korea WebSite Project
+Front Github : <https://github.com/DonggyunKim00/LeicaBlog>
+
+
 
