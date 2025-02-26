@@ -40,8 +40,10 @@
 ### 로그인
 - 서버 관리자가 지정한 계정으로 로그인을 진행한다.
 - 관리자를 제외한 일반사용자는 게시글을 읽기 권한만 소유한다.
+- 미리지정된 url로 관리자만 접속하여 로그인한다.
 
-< 이미지 대기.. >
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/d7bfd1c7-a49f-41f7-8a32-48fd89df2c33" />
+
 
 ----
 
